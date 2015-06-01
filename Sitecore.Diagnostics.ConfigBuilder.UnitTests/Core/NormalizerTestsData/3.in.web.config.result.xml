@@ -1,0 +1,11 @@
+<configuration>
+  <sitecore>
+    <settings>
+      <setting name="A" value="" />
+    </settings>
+    <settings>
+      <setting name="A" value="A" />
+      <setting name="B" value="B" />
+    </settings>
+  </sitecore>
+</configuration>

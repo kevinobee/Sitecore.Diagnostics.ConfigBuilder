@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5AEF4BA4-F365-4DBE-8295-418630BE1C60}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sitecore.Diagnostics.ConfigBuilder</RootNamespace>
+    <AssemblyName>Sitecore.Diagnostics.ConfigBuilder</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Sitecore.Diagnostics.Base">
+      <HintPath>..\packages\Sitecore.Diagnostics.Base.1.0\lib\net35\Sitecore.Diagnostics.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConfigBuilder.cs" />
+    <Compile Include="ConfigBuilderEngine.cs" />
+    <Compile Include="Engine\Common\ConfigBuilderLog.cs" />
+    <Compile Include="Engine\Common\PathMapper.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludeFilesLoader.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\ConfigPatcher.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\IXmlElement.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\IXmlNode.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\IXmlSource.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\XmlNodeInfo.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\XmlPatcher.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\XmlPatchNamespaces.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\XmlPatchUtils.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\AutoIncludes\XmlReaderSource.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\GlobalVariablesReplacer.cs" />
+    <Compile Include="Engine\ConfigurationCollecting\IncludeFileExpander.cs" />
+    <Compile Include="Engine\Helpers\XmlUtil.cs" />
+    <Compile Include="IConfigBuilderEngine.cs" />
+    <Compile Include="Normalizer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Normalize.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

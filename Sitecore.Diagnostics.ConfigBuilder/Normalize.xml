@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<normalize>
+  <node path="/configuration/sitecore/settings" sortBy="attributes" attributeNames="name" />
+  <node path="/configuration/sitecore/events" sortBy="attributes" attributeNames="name" />
+  <node path="/configuration/sitecore/customHandlers" sortBy="attributes" attributeNames="handler" />
+  <node path="/configuration/sitecore/pipelines" />
+  <node path="/configuration/sitecore/dataProviders" />
+  <node path="/configuration/sitecore/proxyDataProviders" />
+  <node path="/configuration/sitecore/workflowHistoryStores" />
+  <node path="/configuration/sitecore/databases" sortBy="attributes" attributeNames="id" />
+  <node path="/configuration/sitecore/databases/database" />
+  <node path="/configuration/sitecore/indexes" sortBy="attributes" attributeNames="id" />
+  <node path="/configuration/sitecore/search" />
+  <node path="/configuration/sitecore/search/configuration/indexes" sortBy="attributes" attributeNames="id" />
+  <node path="/configuration/sitecore/accessRights/rights" sortBy="attributes" attributeNames="name" />
+  <node path="/configuration/sitecore/accessRights/rules" sortBy="attributes" attributeNames="prefix" />
+  <node path="/configuration/sitecore/switchingProviders" />
+  <node path="/configuration/sitecore/fieldTypes" sortBy="attributes" attributeNames="name" />
+  <node path="/configuration/sitecore/scheduling" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/processors" />
+  <node path="/configuration/sitecore/pageextenders" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xslExtensions" sortBy="attributes" attributeNames="namespace" />
+  <node path="/configuration/sitecore/xslControls" sortBy="attributes" attributeNames="tag" />
+  <node path="/configuration/sitecore/controlSources" sortBy="attributes" attributeNames="namespace" />
+  <node path="/configuration/sitecore/ui/usings" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/configuration/sitecore/ui/references" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/configuration/sitecore/ui/forms" sortBy="attributes" attributeNames="assembly" />
+  <node path="/configuration/sitecore/xamlsharp/compilers" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/controlcompilers" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/extensions" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/attributeAssigners" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/attributeEvaluators" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/sources" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/definitionCreators" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/htmlControls" sortBy="attributes" attributeNames="tag" />
+  <node path="/configuration/sitecore/xamlsharp/sources" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/xamlsharp/sources" sortBy="attributes" attributeNames="type" />
+  <node path="/configuration/sitecore/languageDefinitions/languages" sortBy="attributes" attributeNames="region|id" />
+  <node path="/configuration/sitecore/replacers" sortBy="attributes" attributeNames="id" />
+  <node path="/configuration/sitecore/encodeNameReplacements" sortBy="attributes" attributeNames="find" />
+  <node path="/configuration/sitecore/cacheSizes" />
+  <node path="/configuration/sitecore/mediaLibrary" />
+  <node path="/configuration/sitecore/mediaLibrary/mediaPrefixes" sortBy="attributes" attributeNames="value" />
+  <node path="/configuration/sitecore/mediaLibrary/mediaTypes" sortBy="attributes" attributeNames="extensions" />
+  <node path="/configuration/sitecore/mediaLibrary/mediaTypes/mediaType" />
+  <node path="/configuration/sitecore/mediaLibrary/watcher/ignoreList" sortBy="attributes" attributeNames="contains" />
+  <node path="/configuration/sitecore/mediaLibrary/rendering/typesThatShouldNotBeExpanded" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/configuration/sitecore/commands" sortBy="attributes" attributeNames="name" />
+  <node path="/configuration/sitecore/icons" sortBy="attributes" attributeNames="name" />
+  <node path="/configuration/sitecore/publishing/smartPublishTriggers" sortBy="attributes" attributeNames="templateId" />
+  <node path="/configuration/sitecore/scheduling/agent/indexes" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/configuration/sitecore/watchers" />
+  <node path="/configuration/sitecorecontentSearch" />
+  <node path="/configuration/sitecorecontentSearch/configuration" />
+  <node path="/configuration/sitecorecontentSearch/configuration/defaultIndexConfiguration" />
+  <node path="/configuration/sitecorecontentSearch/configuration/indexes" sortBy="attributes" attributeNames="id" />
+  <node path="/configuration/sitecore" />
+  <node path="/configuration" />
+  <node path="/sitecore/settings" sortBy="attributes" attributeNames="name" />
+  <node path="/sitecore/events" sortBy="attributes" attributeNames="name" />
+  <node path="/sitecore/customHandlers" sortBy="attributes" attributeNames="handler" />
+  <node path="/sitecore/pipelines" />
+  <node path="/sitecore/dataProviders" />
+  <node path="/sitecore/proxyDataProviders" />
+  <node path="/sitecore/workflowHistoryStores" />
+  <node path="/sitecore/databases" sortBy="attributes" attributeNames="id" />
+  <node path="/sitecore/databases/database" />
+  <node path="/sitecore/indexes" sortBy="attributes" attributeNames="id" />
+  <node path="/sitecore/search" />
+  <node path="/sitecore/search/indexes" sortBy="attributes" attributeNames="id" />
+  <node path="/sitecore/accessRights/rights" sortBy="attributes" attributeNames="name" />
+  <node path="/sitecore/accessRights/rules" sortBy="attributes" attributeNames="prefix" />
+  <node path="/sitecore/switchingProviders" />
+  <node path="/sitecore/fieldTypes" sortBy="attributes" attributeNames="name" />
+  <node path="/sitecore/scheduling" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/processors" />
+  <node path="/sitecore/pageextenders" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xslExtensions" sortBy="attributes" attributeNames="namespace" />
+  <node path="/sitecore/xslControls" sortBy="attributes" attributeNames="tag" />
+  <node path="/sitecore/controlSources" sortBy="attributes" attributeNames="namespace" />
+  <node path="/sitecore/ui/usings" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/sitecore/ui/references" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/sitecore/ui/forms" sortBy="attributes" attributeNames="assembly" />
+  <node path="/sitecore/xamlsharp/compilers" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/controlcompilers" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/extensions" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/attributeAssigners" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/attributeEvaluators" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/sources" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/definitionCreators" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/htmlControls" sortBy="attributes" attributeNames="tag" />
+  <node path="/sitecore/xamlsharp/sources" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/xamlsharp/sources" sortBy="attributes" attributeNames="type" />
+  <node path="/sitecore/languageDefinitions/languages" sortBy="attributes" attributeNames="region|id" />
+  <node path="/sitecore/replacers" sortBy="attributes" attributeNames="id" />
+  <node path="/sitecore/encodeNameReplacements" sortBy="attributes" attributeNames="find" />
+  <node path="/sitecore/cacheSizes" />
+  <node path="/sitecore/mediaLibrary" />
+  <node path="/sitecore/mediaLibrary/mediaPrefixes" sortBy="attributes" attributeNames="value" />
+  <node path="/sitecore/mediaLibrary/mediaTypes" sortBy="attributes" attributeNames="extensions" />
+  <node path="/sitecore/mediaLibrary/mediaTypes/mediaType" />
+  <node path="/sitecore/mediaLibrary/watcher/ignoreList" sortBy="attributes" attributeNames="contains" />
+  <node path="/sitecore/mediaLibrary/rendering/typesThatShouldNotBeExpanded" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/sitecore/commands" sortBy="attributes" attributeNames="name" />
+  <node path="/sitecore/icons" sortBy="attributes" attributeNames="name" />
+  <node path="/sitecore/publishing/smartPublishTriggers" sortBy="attributes" attributeNames="templateId" />
+  <node path="/sitecore/scheduling/agent/indexes" sortBy="attributes" attributeNames="$innerXML$" />
+  <node path="/sitecore/watchers" />
+  <node path="/sitecorecontentSearch" />
+  <node path="/sitecorecontentSearch/configuration" />
+  <node path="/sitecorecontentSearch/configuration/defaultIndexConfiguration" />  
+  <node path="/configuration/sitecorecontentSearch/configuration" />
+  <node path="/sitecore" />
+</normalize>
