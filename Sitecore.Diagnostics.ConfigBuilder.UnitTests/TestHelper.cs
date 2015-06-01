@@ -1,6 +1,6 @@
 ﻿//using log4net.Config;
 
-namespace Sitecore.Diagnostics.ConfigBuilder.Tests
+namespace Sitecore.Diagnostics.ConfigBuilder.UnitTests
 {
   using System;
   using System.Collections;

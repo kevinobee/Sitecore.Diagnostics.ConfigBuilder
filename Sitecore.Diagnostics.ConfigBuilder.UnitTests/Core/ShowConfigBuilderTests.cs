@@ -1,4 +1,4 @@
-﻿namespace Sitecore.Diagnostics.ConfigBuilder.Tests.Core
+﻿namespace Sitecore.Diagnostics.ConfigBuilder.UnitTests.Core
 {
   using System;
   using Microsoft.VisualStudio.TestTools.UnitTesting;

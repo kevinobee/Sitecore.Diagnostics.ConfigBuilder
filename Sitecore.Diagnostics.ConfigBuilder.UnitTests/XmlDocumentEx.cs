@@ -4,7 +4,7 @@
 
 #endregion
 
-namespace Sitecore.Diagnostics.ConfigBuilder.Tests
+namespace Sitecore.Diagnostics.ConfigBuilder.UnitTests
 {
   using System;
   using System.IO;

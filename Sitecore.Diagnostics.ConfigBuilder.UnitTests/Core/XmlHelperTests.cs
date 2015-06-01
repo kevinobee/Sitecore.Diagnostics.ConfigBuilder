@@ -1,3 +1,3 @@
-﻿namespace Sitecore.Diagnostics.ConfigBuilder.Tests.Core
+﻿namespace Sitecore.Diagnostics.ConfigBuilder.UnitTests.Core
 {
 }
