@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sitecore.Diagnostics.ConfigBuilder.UnitTests", "Sitecore.Diagnostics.ConfigBuilder.UnitTests\Sitecore.Diagnostics.ConfigBuilder.UnitTests.csproj", "{0FA38ECC-266F-4E1D-83D7-C2F18EDCDA6D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code", "Code", "{7B852F57-51EE-4D6D-8A1D-2A5C73AB4F32}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sitecore.Diagnostics.ConfigBuilder", "Sitecore.Diagnostics.ConfigBuilder\Sitecore.Diagnostics.ConfigBuilder.csproj", "{5AEF4BA4-F365-4DBE-8295-418630BE1C60}"
 EndProject
@@ -40,8 +40,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{5AEF4BA4-F365-4DBE-8295-418630BE1C60} = {7B852F57-51EE-4D6D-8A1D-2A5C73AB4F32}
 	EndGlobalSection
 EndGlobal

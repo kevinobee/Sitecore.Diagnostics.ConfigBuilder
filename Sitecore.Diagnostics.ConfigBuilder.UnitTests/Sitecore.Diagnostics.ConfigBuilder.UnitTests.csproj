@@ -77,7 +77,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Sitecore.Diagnostics.ConfigBuilder\Sitecore.Diagnostics.ConfigBuilder.csproj">
       <Project>{5aef4ba4-f365-4dbe-8295-418630be1c60}</Project>
-      <Name>ConfigBuilder</Name>
+      <Name>Sitecore.Diagnostics.ConfigBuilder</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
