@@ -1,8 +1,13 @@
-﻿using System.Reflection;
+﻿#region Usings
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 
+#endregion
+
 [assembly: AssemblyTitle("Sitecore.Diagnostics.ConfigBuilder")]
-[assembly: AssemblyProduct("Sitecore.Diagnostics.ConfigBuilder")]
-[assembly: AssemblyCopyright("Copyright © 2015")]
+[assembly: AssemblyCompany("Sitecore Corporation")]
+[assembly: AssemblyCopyright("Copyright © 2001-2015 Sitecore Corporation")]
+[assembly: AssemblyTrademark("Sitecore® is a registered trademark of Sitecore Corporation")]
+[assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: Guid("d358cf23-f270-4c4d-a7ab-6c732d7c09e7")]

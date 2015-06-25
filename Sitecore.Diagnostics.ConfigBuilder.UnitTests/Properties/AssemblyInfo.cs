@@ -1,9 +1,13 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿#region Usings
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Tests")]
-[assembly: AssemblyProduct("Tests")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+#endregion
+
+[assembly: AssemblyTitle("Sitecore.Diagnostics.ConfigBuilder.UnitTests")]
+[assembly: AssemblyCompany("Sitecore Corporation")]
+[assembly: AssemblyCopyright("Copyright © 2001-2015 Sitecore Corporation")]
+[assembly: AssemblyTrademark("Sitecore® is a registered trademark of Sitecore Corporation")]
+[assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: Guid("05fa9e20-6366-40c5-9ed0-9fb490a56da7")]
