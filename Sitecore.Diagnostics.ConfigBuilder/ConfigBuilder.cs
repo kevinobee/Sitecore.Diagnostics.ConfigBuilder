@@ -1,6 +1,7 @@
 ﻿namespace Sitecore.Diagnostics.ConfigBuilder
 {
   using System.Xml;
+  using Sitecore.Diagnostics.Annotations;
 
   public static class ConfigBuilder
   {
@@ -13,9 +14,11 @@
     /// <param name="outputFilePath">The path to the file where the result will be written to.</param>
     /// <param name="buildWebConfigResult">Indicates if showconfig.xml file should be merged into web.config file.</param>
     /// <param name="normalizeOutput">Indicates if the output file should be normalized the same way it is done in runtime.</param>
-    public static void Build(string webConfigFilePath, string outputFilePath, bool buildWebConfigResult, bool normalizeOutput)
+    [PublicAPI]
+    public static void Build([NotNull] string webConfigFilePath, [NotNull] string outputFilePath, bool buildWebConfigResult, bool normalizeOutput)
     {
       Assert.ArgumentNotNullOrEmpty(webConfigFilePath, "webConfigFilePath");
+      Assert.ArgumentNotNull(outputFilePath, "outputFilePath");
 
       Instance.Build(webConfigFilePath, outputFilePath, buildWebConfigResult, normalizeOutput);
     }
@@ -27,7 +30,8 @@
     /// <param name="buildWebConfigResult">Indicates if showconfig.xml file should be merged into web.config file.</param>
     /// <param name="normalizeOutput">Indicates if the output file should be normalized the same way it is done in runtime.</param>
     /// <returns>The result xml document.</returns>
-    public static XmlDocument Build(string webConfigFilePath, bool buildWebConfigResult, bool normalizeOutput)
+    [NotNull, PublicAPI]
+    public static XmlDocument Build([NotNull] string webConfigFilePath, bool buildWebConfigResult, bool normalizeOutput)
     {
       Assert.ArgumentNotNullOrEmpty(webConfigFilePath, "webConfigFilePath");
 
