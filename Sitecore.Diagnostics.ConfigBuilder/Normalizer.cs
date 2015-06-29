@@ -12,10 +12,10 @@
   using Sitecore.Diagnostics;
   using Sitecore.Diagnostics.Annotations;
 
-  public class Normalizer
+  public static class Normalizer 
   {
     [NotNull]
-    protected static string GetAttributeValueSafe([NotNull] string attributeName, [NotNull] XElement e)
+    private static string GetAttributeValueSafe([NotNull] string attributeName, [NotNull] XElement e)
     {
       Assert.ArgumentNotNull(attributeName, "attributeName");
       Assert.ArgumentNotNull(e, "e");
