@@ -2,74 +2,96 @@
 {
   using System;
   using System.Xml;
+  using Sitecore.Diagnostics.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Common;
 
-  internal class XmlUtil
+  internal static class XmlUtil
   {
-    internal static XmlDocument LoadXmlFile(string filename, PathMapper pathMapper)
+    [NotNull]
+    internal static XmlDocument LoadXmlFile([NotNull] string filename, [NotNull] PathMapper pathMapper)
     {
-      XmlDocument document = new XmlDocument();
+      Assert.ArgumentNotNull(filename, "filename");
+      Assert.ArgumentNotNull(pathMapper, "pathMapper");
+
+      var document = new XmlDocument();
       var mappedPath = pathMapper.MapPath(filename);
       document.Load(mappedPath);
+
       return document;
     }
 
-    internal static void TransferAttributes(XmlNode source, XmlNode target)
+    internal static void TransferAttributes([NotNull] XmlNode source, [CanBeNull] XmlNode target)
     {
+      Assert.ArgumentNotNull(source, "source");
+
       foreach (XmlAttribute attribute in source.Attributes)
       {
         SetAttribute(attribute.Name, attribute.Value, target);
       }
     }
 
-    internal static void SetAttribute(string name, string value, XmlNode node)
+    internal static void SetAttribute([NotNull] string name, [NotNull] string value, [CanBeNull] XmlNode node)
     {
-      if ((node != null) && (node.Attributes != null))
+      Assert.ArgumentNotNull(name, "name");
+      Assert.ArgumentNotNull(value, "value");
+
+      if (node == null || node.Attributes == null)
       {
-        if (node is XmlDocument)
+        return;
+      }
+
+      if (node is XmlDocument)
+      {
+        node = ((XmlDocument)node).DocumentElement;
+      }
+
+      var attribute = node.Attributes[name];
+      if (attribute != null)
+      {
+        attribute.Value = value;
+      }
+      else
+      {
+        var prefix = string.Empty;
+        var namespaceURI = string.Empty;
+        if (name.StartsWith("sc:", StringComparison.InvariantCulture))
         {
-          node = ((XmlDocument)node).DocumentElement;
+          prefix = "sc";
+          namespaceURI = "Sitecore";
+          name = name.Substring(3);
         }
-        XmlAttribute attribute = node.Attributes[name];
-        if (attribute != null)
+
+        if (namespaceURI.Length > 0)
         {
-          attribute.Value = value;
+          attribute = node.OwnerDocument.CreateAttribute(prefix, name, namespaceURI);
         }
         else
         {
-          string prefix = string.Empty;
-          string namespaceURI = string.Empty;
-          if (name.StartsWith("sc:", StringComparison.InvariantCulture))
-          {
-            prefix = "sc";
-            namespaceURI = "Sitecore";
-            name = name.Substring(3);
-          }
-          if (namespaceURI.Length > 0)
-          {
-            attribute = node.OwnerDocument.CreateAttribute(prefix, name, namespaceURI);
-          }
-          else
-          {
-            attribute = node.OwnerDocument.CreateAttribute(name);
-          }
-          attribute.Value = value;
-          node.Attributes.Append(attribute);
+          attribute = node.OwnerDocument.CreateAttribute(name);
         }
+
+        attribute.Value = value;
+        node.Attributes.Append(attribute);
       }
     }
 
 
-    internal static string GetAttribute(string name, XmlNode node)
+    [NotNull]
+    internal static string GetAttribute([NotNull] string name, [CanBeNull] XmlNode node)
     {
-      if ((node != null) && (node.Attributes != null))
+      Assert.ArgumentNotNull(name, "name");
+
+      if (node == null || node.Attributes == null)
       {
-        XmlNode node2 = node.Attributes[name];
-        if (node2 != null)
-        {
-          return node2.Value;
-        }
+        return string.Empty;
       }
+
+      var node2 = node.Attributes[name];
+      if (node2 != null)
+      {
+        return node2.Value;
+      }
+
       return string.Empty;
     }
   }

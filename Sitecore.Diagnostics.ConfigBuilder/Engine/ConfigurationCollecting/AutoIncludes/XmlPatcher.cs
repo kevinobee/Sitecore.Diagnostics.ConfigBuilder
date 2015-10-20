@@ -1,29 +1,41 @@
 ﻿namespace Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting.AutoIncludes
 {
   using System.Xml;
+  using Sitecore.Diagnostics.Annotations;
 
   internal class XmlPatcher
   {
-    private XmlPatchNamespaces ns;
+    [NotNull]
+    private readonly XmlPatchNamespaces Namespaces;
 
-    internal XmlPatcher(string setNamespace, string patchNamespace)
+    internal XmlPatcher([NotNull] string setNamespace, [NotNull] string patchNamespace)
     {
-      XmlPatchNamespaces namespaces = new XmlPatchNamespaces
+      Assert.ArgumentNotNull(setNamespace, "setNamespace");
+      Assert.ArgumentNotNull(patchNamespace, "patchNamespace");
+
+      var namespaces = new XmlPatchNamespaces
       {
         SetNamespace = setNamespace,
         PatchNamespace = patchNamespace
       };
-      this.ns = namespaces;
+
+      this.Namespaces = namespaces;
     }
 
-    internal void Merge(System.Xml.XmlNode target, XmlReaderSource patch)
+    internal void Merge([NotNull] XmlNode target, [NotNull] XmlReaderSource patch)
     {
-      XmlPatchUtils.MergeNodes(target, patch, this.ns);
+      Assert.ArgumentNotNull(target, "target");
+      Assert.ArgumentNotNull(patch, "patch");
+
+      XmlPatchUtils.MergeNodes(target, patch, this.Namespaces);
     }
 
-    internal void Merge(System.Xml.XmlNode target, XmlReader reader)
+    internal void Merge([NotNull] XmlNode target, [NotNull] XmlReader reader)
     {
-      XmlPatchUtils.MergeNodes(target, new XmlReaderSource(reader), this.ns);
+      Assert.ArgumentNotNull(target, "target");
+      Assert.ArgumentNotNull(reader, "reader");
+
+      XmlPatchUtils.MergeNodes(target, new XmlReaderSource(reader), this.Namespaces);
     }
   }
 }

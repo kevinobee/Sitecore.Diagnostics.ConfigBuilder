@@ -5,12 +5,13 @@
   using System.IO;
   using System.Xml;
   using Sitecore.Diagnostics;
+  using Sitecore.Diagnostics.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Common;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting.AutoIncludes;
 
-  internal class AutoIncludeFilesLoader
+  internal static class AutoIncludeFilesLoader
   {
-    internal static void LoadAutoIncludeFiles(XmlNode element, PathMapper mapper, IEnumerable<string> includeFoldersPaths)
+    internal static void LoadAutoIncludeFiles([NotNull] XmlNode element, [NotNull] PathMapper mapper, [NotNull] IEnumerable<string> includeFoldersPaths)
     {
       Assert.ArgumentNotNull(element, "element");
       Assert.ArgumentNotNull(mapper, "mapper");
@@ -23,49 +24,52 @@
       }
     }
 
-    private static void LoadAutoIncludeFiles(ConfigPatcher patcher, string folder)
+    private static void LoadAutoIncludeFiles([NotNull] ConfigPatcher patcher, [NotNull] string folder)
     {
+      Assert.ArgumentNotNull(patcher, "patcher");
+      Assert.ArgumentNotNull(folder, "folder");
+
       try
       {
-        if (Directory.Exists(folder))
+        if (!Directory.Exists(folder))
         {
-          foreach (string str in Directory.GetFiles(folder, "*.config"))
+          return;
+        }
+
+        foreach (var str in Directory.GetFiles(folder, "*.config"))
+        {
+          try
           {
-            try
+            if ((File.GetAttributes(str) & FileAttributes.Hidden) == 0)
             {
-              if ((File.GetAttributes(str) & FileAttributes.Hidden) == 0)
-              {
-                patcher.ApplyPatch(str);
-              }
-            }
-            catch (Exception exception)
-            {
-              ConfigBuilderLog.Error(string.Concat(new object[] { "Could not load configuration file: ", str, ": ", exception }));
+              patcher.ApplyPatch(str);
             }
           }
-          foreach (string str2 in Directory.GetDirectories(folder))
+          catch (Exception exception)
           {
-            try
+            ConfigBuilderLog.Error("Could not load configuration file: " + str + ": " + exception);
+          }
+        }
+
+        foreach (string str2 in Directory.GetDirectories(folder))
+        {
+          try
+          {
+            if ((File.GetAttributes(str2) & FileAttributes.Hidden) == 0)
             {
-              if ((File.GetAttributes(str2) & FileAttributes.Hidden) == 0)
-              {
-                LoadAutoIncludeFiles(patcher, str2);
-              }
+              LoadAutoIncludeFiles(patcher, str2);
             }
-            catch (Exception exception2)
-            {
-              ConfigBuilderLog.Error(string.Concat(new object[] { "Could not scan configuration folder ", str2, " for files: ", exception2 }));
-            }
+          }
+          catch (Exception exception2)
+          {
+            ConfigBuilderLog.Error("Could not scan configuration folder " + str2 + " for files: " + exception2);
           }
         }
       }
       catch (Exception exception3)
       {
-        ConfigBuilderLog.Error(string.Concat(new object[] { "Could not scan configuration folder ", folder, " for files: ", exception3 }));
+        ConfigBuilderLog.Error("Could not scan configuration folder " + folder + " for files: " + exception3);
       }
     }
-
-
-
   }
 }

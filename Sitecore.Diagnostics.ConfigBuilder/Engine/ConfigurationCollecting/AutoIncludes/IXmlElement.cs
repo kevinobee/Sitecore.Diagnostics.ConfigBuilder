@@ -5,7 +5,7 @@
   internal interface IXmlElement : IXmlNode
   {
     IEnumerable<IXmlNode> GetAttributes();
-    IEnumerable<IXmlElement> GetChildren();
 
+    IEnumerable<IXmlElement> GetChildren();
   }
 }

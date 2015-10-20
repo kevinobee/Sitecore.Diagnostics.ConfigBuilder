@@ -3,17 +3,26 @@
   using System.IO;
   using System.Text;
   using System.Xml;
+  using Sitecore.Diagnostics.Annotations;
 
   internal class ConfigPatcher
   {
-    private XmlPatcher _patcher = new XmlPatcher("http://www.sitecore.net/xmlconfig/set/", "http://www.sitecore.net/xmlconfig/");
-    private System.Xml.XmlNode _root;
     internal const string ConfigurationNamespace = "http://www.sitecore.net/xmlconfig/";
+
     internal const string SetNamespace = "http://www.sitecore.net/xmlconfig/set/";
 
-    internal ConfigPatcher(System.Xml.XmlNode node)
+    [NotNull]
+    private readonly XmlPatcher Patcher;
+
+    [NotNull]
+    private readonly XmlNode Root;
+
+    internal ConfigPatcher([NotNull] XmlNode node)
     {
-      this._root = node;
+      Assert.ArgumentNotNull(node, "node");
+
+      this.Root = node;
+      this.Patcher = new XmlPatcher(SetNamespace, ConfigurationNamespace);
     }
 
     internal void ApplyPatch(TextReader patch)
@@ -31,21 +40,21 @@
 
     internal void ApplyPatch(TextReader patch, string sourceName)
     {
-      XmlTextReader reader = new XmlTextReader(patch)
+      var reader = new XmlTextReader(patch)
       {
         WhitespaceHandling = WhitespaceHandling.None
       };
       reader.MoveToContent();
       reader.ReadStartElement("configuration");
-      this._patcher.Merge(this._root, new XmlReaderSource(reader, sourceName));
+      this.Patcher.Merge(this.Root, new XmlReaderSource(reader, sourceName));
       reader.ReadEndElement();
     }
 
-    internal System.Xml.XmlNode Document
+    internal XmlNode Document
     {
       get
       {
-        return this._root;
+        return this.Root;
       }
     }
   }

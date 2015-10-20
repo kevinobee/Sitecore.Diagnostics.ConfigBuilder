@@ -3,21 +3,28 @@
   using System;
   using System.Collections.Generic;
   using System.Xml;
+  using Sitecore.Diagnostics.Annotations;
 
-  internal class XmlReaderSource : IXmlElement, IXmlNode, IXmlSource
+  internal class XmlReaderSource : IXmlElement, IXmlSource
   {
-    private string sourceName;
-    private readonly XmlReader reader;
-    private bool incomplete;
+    [CanBeNull]
+    private readonly string sourceName;
 
-    internal XmlReaderSource(XmlReader reader)
+    private readonly XmlReader Reader;
+
+    private bool Incomplete;
+
+    internal XmlReaderSource([NotNull] XmlReader reader)
       : this(reader, string.Empty)
     {
+      Assert.ArgumentNotNull(reader, "reader");
     }
 
-    internal XmlReaderSource(XmlReader reader, string sourceName)
+    internal XmlReaderSource([NotNull] XmlReader reader, [CanBeNull] string sourceName)
     {
-      this.reader = reader;
+      Assert.ArgumentNotNull(reader, "reader");
+
+      this.Reader = reader;
       this.sourceName = sourceName;
       if (reader.NodeType != XmlNodeType.Element)
       {
@@ -29,7 +36,7 @@
     {
       get
       {
-        return this.reader.NamespaceURI;
+        return this.Reader.NamespaceURI;
       }
     }
 
@@ -37,7 +44,7 @@
     {
       get
       {
-        return this.reader.NodeType;
+        return this.Reader.NodeType;
       }
     }
 
@@ -45,11 +52,12 @@
     {
       get
       {
-        return this.reader.Prefix;
+        return this.Reader.Prefix;
       }
     }
 
 
+    [CanBeNull]
     public string SourceName
     {
       get
@@ -62,7 +70,7 @@
     {
       get
       {
-        return this.reader.Value;
+        return this.Reader.Value;
       }
     }
 
@@ -70,41 +78,46 @@
     {
       get
       {
-        return this.reader.LocalName;
+        return this.Reader.LocalName;
       }
     }
 
+    [NotNull]
     public IEnumerable<IXmlElement> GetChildren()
     {
-      this.incomplete = false;
-      if (!this.reader.IsEmptyElement)
+      this.Incomplete = false;
+      if (!this.Reader.IsEmptyElement)
       {
-        this.reader.ReadStartElement();
-        while (this.reader.NodeType != XmlNodeType.EndElement)
+        this.Reader.ReadStartElement();
+        while (this.Reader.NodeType != XmlNodeType.EndElement)
         {
-          this.incomplete = true;
+          this.Incomplete = true;
           yield return this;
-          if (this.incomplete)
+          if (!this.Incomplete)
           {
-            this.reader.ReadOuterXml();
-            this.incomplete = false;
+            continue;
           }
+
+          this.Reader.ReadOuterXml();
+          this.Incomplete = false;
         }
-        this.reader.ReadEndElement();
+
+        this.Reader.ReadEndElement();
         yield break;
       }
-      this.reader.Read();
+
+      this.Reader.Read();
     }
 
     public IEnumerable<IXmlNode> GetAttributes()
     {
-      bool successfullyMoved = this.reader.MoveToFirstAttribute();
+      bool successfullyMoved = this.Reader.MoveToFirstAttribute();
       while (successfullyMoved)
       {
         yield return this;
-        successfullyMoved = this.reader.MoveToNextAttribute();
+        successfullyMoved = this.Reader.MoveToNextAttribute();
       }
-      this.reader.MoveToElement();
+      this.Reader.MoveToElement();
     }
   }
 }

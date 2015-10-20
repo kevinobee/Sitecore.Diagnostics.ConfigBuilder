@@ -5,130 +5,158 @@
   using System.Linq;
   using System.Xml;
   using Sitecore.Diagnostics;
+  using Sitecore.Diagnostics.Annotations;
 
-  internal class XmlPatchUtils
+  internal static class XmlPatchUtils
   {
-    internal static void AssignAttributes(XmlNode target, IEnumerable<IXmlNode> attributes)
+    internal static void AssignAttributes([NotNull] XmlNode target, [NotNull] IEnumerable<IXmlNode> attributes)
     {
       Assert.ArgumentNotNull(target, "target");
       Assert.ArgumentNotNull(attributes, "attributes");
+
       foreach (IXmlNode node in attributes)
       {
         Assert.IsNotNull(target.Attributes, "attributes");
-        XmlAttribute attribute = target.Attributes[node.LocalName, node.NamespaceURI];
+
+        var attribute = target.Attributes[node.LocalName, node.NamespaceURI];
         if (attribute == null)
         {
           Assert.IsNotNull(target.OwnerDocument, "document");
+
           attribute = target.OwnerDocument.CreateAttribute(MakeName(node.Prefix, node.LocalName), node.NamespaceURI);
           target.Attributes.Append(attribute);
         }
+
         attribute.Value = node.Value;
       }
     }
 
-    private static void AssignSource(XmlNode target, object source, XmlPatchNamespaces ns)
+    private static void AssignSource([NotNull] XmlNode target, [NotNull] object source, [NotNull] XmlPatchNamespaces ns)
     {
       Assert.ArgumentNotNull(target, "target");
       Assert.ArgumentNotNull(source, "source");
       Assert.ArgumentNotNull(ns, "ns");
-      IXmlSource source2 = source as IXmlSource;
-      if (source2 != null)
+
+      var source2 = source as IXmlSource;
+      if (source2 == null)
       {
-        string sourceName = source2.SourceName;
-        if (!string.IsNullOrEmpty(sourceName))
-        {
-          string prefixOfNamespace = target.OwnerDocument.GetPrefixOfNamespace(ns.PatchNamespace);
-          if (string.IsNullOrEmpty(prefixOfNamespace))
-          {
-            prefixOfNamespace = "patch";
-            XmlNode documentElement = target.OwnerDocument.DocumentElement;
-            XmlAttribute node = target.OwnerDocument.CreateAttribute("xmlns:" + prefixOfNamespace);
-            node.Value = ns.PatchNamespace;
-            documentElement.Attributes.Append(node);
-          }
-          XmlAttribute attribute2 = target.Attributes["source", ns.PatchNamespace];
-          if (attribute2 == null)
-          {
-            attribute2 = target.OwnerDocument.CreateAttribute(prefixOfNamespace, "source", ns.PatchNamespace);
-            target.Attributes.Append(attribute2);
-          }
-          attribute2.Value = sourceName;
-        }
+        return;
       }
+
+      var sourceName = source2.SourceName;
+      if (string.IsNullOrEmpty(sourceName))
+      {
+        return;
+      }
+
+      var prefixOfNamespace = target.OwnerDocument.GetPrefixOfNamespace(ns.PatchNamespace);
+      if (string.IsNullOrEmpty(prefixOfNamespace))
+      {
+        prefixOfNamespace = "patch";
+        XmlNode documentElement = target.OwnerDocument.DocumentElement;
+        XmlAttribute node = target.OwnerDocument.CreateAttribute("xmlns:" + prefixOfNamespace);
+        node.Value = ns.PatchNamespace;
+        documentElement.Attributes.Append(node);
+      }
+
+      var attribute2 = target.Attributes["source", ns.PatchNamespace];
+      if (attribute2 == null)
+      {
+        attribute2 = target.OwnerDocument.CreateAttribute(prefixOfNamespace, "source", ns.PatchNamespace);
+        target.Attributes.Append(attribute2);
+      }
+
+      attribute2.Value = sourceName;
     }
 
-    internal static void CopyAttributes(XmlNode target, IXmlElement patch, XmlPatchNamespaces ns)
+    internal static void CopyAttributes([NotNull] XmlNode target, [NotNull] IXmlElement patch, [NotNull] XmlPatchNamespaces ns)
     {
       Assert.ArgumentNotNull(target, "target");
       Assert.ArgumentNotNull(patch, "patch");
       Assert.ArgumentNotNull(ns, "ns");
+
       var source1 = from a in patch.GetAttributes()
                                      where (a.NamespaceURI != ns.PatchNamespace) && (a.NamespaceURI != "http://www.w3.org/2000/xmlns/")
                                      select new XmlNodeInfo { NodeType = a.NodeType, NamespaceURI = (a.NamespaceURI == ns.SetNamespace) ? string.Empty : a.NamespaceURI, LocalName = a.LocalName, Value = a.Value, Prefix = a.Prefix };
       var source = source1.ToArray();
-      if (source.Any())
+      if (!source.Any())
       {
-        AssignAttributes(target, source);
-        AssignSource(target, patch, ns);
+        return;
       }
+
+      AssignAttributes(target, source);
+      AssignSource(target, patch, ns);
     }
 
-    private static bool InsertChild(XmlNode parent, XmlNode child, InsertOperation operation)
+    private static bool InsertChild([NotNull] XmlNode parent, [NotNull] XmlNode child, [CanBeNull] InsertOperation operation)
     {
       Assert.ArgumentNotNull(parent, "parent");
       Assert.ArgumentNotNull(child, "child");
+
       if (operation == null)
       {
         parent.AppendChild(child);
+
         return true;
       }
-      XmlNode refChild = parent.SelectSingleNode(operation.Reference);
+
+      var refChild = parent.SelectSingleNode(operation.Reference);
       if (refChild == null)
       {
         parent.AppendChild(child);
+
         return false;
       }
+
       switch (operation.Disposition)
       {
         case 'a':
           parent.InsertAfter(child, refChild);
+
           return true;
 
         case 'b':
           parent.InsertBefore(child, refChild);
+
           return true;
 
         case 'i':
           parent.InsertBefore(child, refChild);
           parent.RemoveChild(refChild);
+
           return true;
       }
+
       throw new Exception("Insert operation is not implemented");
     }
 
-    internal static bool IsXmlPatch(string value)
+    internal static bool IsXmlPatch([NotNull] string value)
     {
       Assert.ArgumentNotNull(value, "value");
-      return (value.IndexOf("p:p=\"1\"", StringComparison.InvariantCulture) >= 0);
+
+      return value.IndexOf("p:p=\"1\"", StringComparison.InvariantCulture) >= 0;
     }
 
-    private static string MakeName(string prefix, string localName)
+    private static string MakeName([CanBeNull] string prefix, [NotNull] string localName)
     {
       Assert.ArgumentNotNull(localName, "localName");
+
       if (!string.IsNullOrEmpty(prefix))
       {
-        return (prefix + ":" + localName);
+        return prefix + ":" + localName;
       }
+
       return localName;
     }
 
-    private static void MergeChildren(XmlNode target, IXmlElement patch, XmlPatchNamespaces ns, bool targetWasInserted)
+    private static void MergeChildren([NotNull] XmlNode target, [NotNull] IXmlElement patch, [NotNull] XmlPatchNamespaces ns, bool targetWasInserted)
     {
       Assert.ArgumentNotNull(target, "target");
       Assert.ArgumentNotNull(patch, "patch");
       Assert.ArgumentNotNull(ns, "ns");
+
       string data = null;
-      Stack<InsertOperation> stack = new Stack<InsertOperation>();
+      var stack = new Stack<InsertOperation>();
       foreach (IXmlElement element in patch.GetChildren())
       {
         XmlNamespaceManager nsManager;
@@ -148,8 +176,8 @@
           }
           else
           {
-            List<IXmlNode> source = new List<IXmlNode>();
-            List<IXmlNode> attributes = new List<IXmlNode>();
+            var source = new List<IXmlNode>();
+            var attributes = new List<IXmlNode>();
             InsertOperation operation = null;
             foreach (IXmlNode node in element.GetAttributes())
             {
@@ -167,7 +195,7 @@
               }
               else if (node.NamespaceURI == ns.SetNamespace)
               {
-                XmlNodeInfo item = new XmlNodeInfo
+                var item = new XmlNodeInfo
                 {
                   NodeType = node.NodeType,
                   NamespaceURI = string.Empty,
@@ -179,7 +207,7 @@
               }
               else if (node.Prefix != "xmlns")
               {
-                XmlNodeInfo info2 = new XmlNodeInfo
+                var info2 = new XmlNodeInfo
                 {
                   NodeType = node.NodeType,
                   NamespaceURI = node.NamespaceURI,
@@ -190,21 +218,25 @@
                 source.Add(info2);
               }
             }
+
             nsManager = new XmlNamespaceManager(new NameTable());
-            string[] strArray = source.Select<IXmlNode, string>(delegate(IXmlNode a)
+            var strArray = source.Select(delegate(IXmlNode a)
             {
               if ((a.Prefix != null) && string.IsNullOrEmpty(nsManager.LookupPrefix(a.Prefix)))
               {
                 nsManager.AddNamespace(a.Prefix, a.NamespaceURI);
               }
+
               return ("@" + MakeName(a.Prefix, a.LocalName) + "=\"" + a.Value + "\"");
-            }).ToArray<string>();
+            }).ToArray();
+
             if ((element.Prefix != null) && string.IsNullOrEmpty(nsManager.LookupPrefix(element.Prefix)))
             {
               nsManager.AddNamespace(element.Prefix, element.NamespaceURI);
             }
+
             XmlNode child = null;
-            bool flag = false;
+            var flag = false;
             if (!targetWasInserted)
             {
               string xpath = MakeName(element.Prefix, element.LocalName);
@@ -212,8 +244,10 @@
               {
                 xpath = xpath + "[" + string.Join(" and ", strArray) + "]";
               }
+
               child = target.SelectSingleNode(xpath, nsManager);
             }
+
             if (child == null)
             {
               Assert.IsNotNull(target.OwnerDocument, "document");
@@ -224,6 +258,7 @@
                 operation.Node = child;
                 stack.Push(operation);
               }
+
               AssignAttributes(child, source);
             }
             else if ((operation != null) && !InsertChild(target, child, operation))
@@ -231,23 +266,27 @@
               operation.Node = child;
               stack.Push(operation);
             }
+
             if (data != null)
             {
               Assert.IsNotNull(child.OwnerDocument, "document");
-              XmlComment newChild = child.OwnerDocument.CreateComment(data);
+              var newChild = child.OwnerDocument.CreateComment(data);
               Assert.IsNotNull(child.ParentNode, "parent");
+
               child.ParentNode.InsertBefore(newChild, child);
               data = null;
             }
+
             AssignAttributes(child, attributes);
             MergeChildren(child, element, ns, flag);
-            if ((flag || attributes.Any<IXmlNode>()) && !targetWasInserted)
+            if ((flag || attributes.Any()) && !targetWasInserted)
             {
               AssignSource(child, element, ns);
             }
           }
         }
       }
+
       while (stack.Count > 0)
       {
         InsertOperation operation3 = stack.Pop();
@@ -256,11 +295,12 @@
       }
     }
 
-    internal static void MergeNodes(XmlNode target, IXmlElement patch, XmlPatchNamespaces ns)
+    internal static void MergeNodes([NotNull] XmlNode target, [NotNull] IXmlElement patch, [NotNull] XmlPatchNamespaces ns)
     {
       Assert.ArgumentNotNull(target, "target");
       Assert.ArgumentNotNull(patch, "patch");
       Assert.ArgumentNotNull(ns, "ns");
+
       if ((target.NamespaceURI == patch.NamespaceURI) && (target.LocalName == patch.LocalName))
       {
         CopyAttributes(target, patch, ns);
@@ -268,17 +308,18 @@
       }
     }
 
-    private static void ProcessConfigNode(XmlNode target, IXmlElement command)
+    private static void ProcessConfigNode([NotNull] XmlNode target, [NotNull] IXmlElement command)
     {
       Assert.ArgumentNotNull(target, "target");
       Assert.ArgumentNotNull(command, "command");
-      Dictionary<string, string> dictionary = command.GetAttributes().ToDictionary<IXmlNode, string, string>(a => a.LocalName, a => a.Value);
-      string localName = command.LocalName;
+
+      var dictionary = command.GetAttributes().ToDictionary<IXmlNode, string, string>(a => a.LocalName, a => a.Value);
+      var localName = command.LocalName;
       if (localName != null)
       {
-        if (!(localName == "a") && !(localName == "attribute"))
+        if (localName != "a" && localName != "attribute")
         {
-          if (!(localName == "d") && !(localName == "delete"))
+          if (localName != "d" && localName != "delete")
           {
             return;
           }
@@ -287,30 +328,35 @@
         {
           string str;
           string str2;
-          if (!dictionary.TryGetValue("ns", out str))
-          {
-            str = null;
-          }
+          dictionary.TryGetValue("ns", out str);
           Assert.IsNotNull(target.Attributes, "attributes");
-          XmlAttribute node = target.Attributes[str, dictionary["name"]];
+
+          var node = target.Attributes[str, dictionary["name"]];
           if (node == null)
           {
             Assert.IsNotNull(target.OwnerDocument, "document");
+
             node = target.OwnerDocument.CreateAttribute(dictionary["name"], str);
             target.Attributes.Append(node);
           }
+
           if (!dictionary.TryGetValue("value", out str2))
           {
             str2 = string.Empty;
           }
+
           foreach (IXmlElement element in command.GetChildren())
           {
             str2 = element.Value ?? str2;
           }
+
           node.Value = str2;
+
           return;
         }
+
         Assert.IsNotNull(target.ParentNode, "parent");
+
         target.ParentNode.RemoveChild(target);
       }
     }
@@ -327,6 +373,5 @@
 
       internal bool Succeeded { get; set; }
     }
-
   }
 }
