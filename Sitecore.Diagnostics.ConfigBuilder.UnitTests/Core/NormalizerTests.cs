@@ -13,9 +13,10 @@
     {
       {
         var filePath = Environment.CurrentDirectory + "\\1.in.showconfig.xml";
-        var actual = Normalizer.Normalize(filePath);
+        var actualPath = Environment.CurrentDirectory + "\\1.in.showconfig.xml.normalized.xml";
+        Normalizer.Normalize(filePath, actualPath);
         var expected = Environment.CurrentDirectory + "\\1.out.showconfig.xml.normalized.xml";
-        TestHelper.AreEqual(XmlDocumentEx.LoadFile(expected) as XmlDocument, actual, "1");
+        TestHelper.AreEqual(XmlDocumentEx.LoadFile(expected), XmlDocumentEx.LoadFile(actualPath), "1");
       }
     }
 
@@ -25,9 +26,10 @@
     {
       {
         var filePath = Environment.CurrentDirectory + "\\2.in.web.config.result.xml";
-        var actual = Normalizer.Normalize(filePath);
+        var actualPath = Environment.CurrentDirectory + "\\1.in.showconfig.xml.normalized.xml";
         var expected = Environment.CurrentDirectory + "\\2.out.web.config.result.xml.normalized.xml";
-        TestHelper.AreEqual(XmlDocumentEx.LoadFile(expected), actual, "2");
+        Normalizer.Normalize(filePath, actualPath);
+        TestHelper.AreEqual(XmlDocumentEx.LoadFile(expected), XmlDocumentEx.LoadFile(actualPath), "2");
       }
     }
 
@@ -37,9 +39,10 @@
     {
       {
         var filePath = Environment.CurrentDirectory + "\\3.in.web.config.result.xml";
-        var actual = Normalizer.Normalize(filePath);
+        var actualPath = Environment.CurrentDirectory + "\\1.in.showconfig.xml.normalized.xml";
         var expected = Environment.CurrentDirectory + "\\3.out.web.config.result.xml.normalized.xml";
-        TestHelper.AreEqual(XmlDocumentEx.LoadFile(expected), actual, "3");
+        Normalizer.Normalize(filePath, actualPath);
+        TestHelper.AreEqual(XmlDocumentEx.LoadFile(expected), XmlDocumentEx.LoadFile(actualPath), "3");
       }
     }
   }

@@ -8,6 +8,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder.UnitTests
   using System.IO;
   using System.Linq;
   using System.Xml;
+  using Microsoft.VisualStudio.TestTools.UnitTesting;
 
   public static class TestHelper
   {
@@ -77,24 +78,17 @@ Log file: {3}".FormatWith(message, actual, expected, LogFilePath));
       }
     }
 
-    public static void AreEqual(XmlDocument actual, XmlDocument expected, string message = null)
+    public static void AreEqual(XmlDocumentEx actual, XmlDocumentEx expected, string message = null)
     {
-      actual = XmlDocumentEx.LoadXml(XmlDocumentEx.Normalize(actual.OuterXml));
-      expected = XmlDocumentEx.LoadXml(XmlDocumentEx.Normalize(expected.OuterXml));
-
-      var afp = Path.GetTempFileName();
-      actual.Save(afp);
-      var efp = Path.GetTempFileName();
-      expected.Save(efp);
-
-
-      AreEqual(XmlDocumentEx.Normalize(actual.OuterXml), XmlDocumentEx.Normalize(expected.OuterXml), @"Files are different. Message: {2}
+      AreEqual(XmlDocumentEx.Normalize(actual.OuterXml), XmlDocumentEx.Normalize(expected.OuterXml), @"Files are different.
 Path (Actual): {0}
 Path (Expect): {1}
 
 Compare CMD: 
 WinMergeU ""{0}"" ""{1}""
-".FormatWith(afp, efp, message));
+
+Message: {2}
+".FormatWith(actual.FilePath, expected.FilePath, message));
     }
 
     public static void AreEqual(IEnumerable<string> actual, IEnumerable<string> expected, string message = null)
