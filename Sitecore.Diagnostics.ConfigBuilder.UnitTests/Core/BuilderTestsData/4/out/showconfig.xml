@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<sitecore database="SqlServer" define="authoring|publishing|delivery" xmlns:role="http://www.sitecore.net/xmlconfig/role/" xmlns:patch="http://www.sitecore.net/xmlconfig/">
+<?xml version="1.0" encoding="utf-8"?>
+<sitecore database="SqlServer" define="delivery" xmlns:role="http://www.sitecore.net/xmlconfig/role/" xmlns:patch="http://www.sitecore.net/xmlconfig/">
   <sc.variable name="dataFolder" value="C:\inetpub\wwwroot\dms\Data" />
   <sc.variable name="mediaFolder" value="/upload" />
   <sc.variable name="tempFolder" value="/temp" />
@@ -237,8 +237,6 @@
     <handler trigger="~/icon/" handler="sitecore_icon.ashx" />
     <handler trigger="~/feed/" handler="sitecore_feed.ashx" />
     <handler trigger="/~/analytics/reports" type="Sitecore.Analytics.Reports.ReportDataHandler, Sitecore.Analytics" patch:source="Sitecore.Analytics.config" />
-    <!-- WebDAV requests handler. -->
-    <handler trigger="/sitecore_files" handler="sitecore_webDAV.ashx" patch:source="Sitecore.WebDAV.config" />
   </customHandlers>
   <!-- LINK DATABASE -->
   <LinkDatabase type="Sitecore.Data.SqlServer.SqlServerLinkDatabase, Sitecore.Kernel">
@@ -275,8 +273,6 @@
       <processor type="Sitecore.Pipelines.Loader.InitializeHeartbeat, Sitecore.Kernel" />
       <processor type="Sitecore.Pipelines.Loader.InitializeAgilityPack, Sitecore.Kernel" />
       <processor type="Sitecore.Pipelines.Loader.EnsureAnonymousUsers, Sitecore.Kernel" />
-      <!-- Processor checks the WebDAV feature configuration on first start. -->
-      <processor type="Sitecore.Pipelines.Loader.CheckWebDAVConfiguration, Sitecore.Kernel" patch:source="Sitecore.WebDAV.config" />
       <processor type="Sitecore.Analytics.Pipelines.Loader.InitializeAnalytics,Sitecore.Analytics" patch:source="Sitecore.Analytics.config" />
       <processor type="Sitecore.Analytics.Pipelines.Loader.InitializeAutomation,Sitecore.Automation.MarketingAutomation" patch:source="Sitecore.Analytics.config" />
     </initialize>
@@ -287,8 +283,6 @@
       <processor type="Sitecore.Pipelines.PreprocessRequest.SuppressFormValidation, Sitecore.Kernel" />
       <processor type="Sitecore.Pipelines.PreprocessRequest.NormalizeRawUrl, Sitecore.Kernel" />
       <processor type="Sitecore.Pipelines.PreprocessRequest.IIS404Handler, Sitecore.Kernel" />
-      <!-- Processes WebDAV requests and assign correct httpHandler. -->
-      <processor type="Sitecore.Pipelines.PreprocessRequest.WebDAVCustomHandler, Sitecore.Kernel" patch:source="Sitecore.WebDAV.config" />
       <processor type="Sitecore.Pipelines.PreprocessRequest.FilterUrlExtensions, Sitecore.Kernel">
         <param desc="Allowed extensions (comma separated)">aspx, ashx, asmx</param>
         <param desc="Blocked extensions (comma separated)">*</param>
@@ -748,67 +742,6 @@
       <processor type="Sitecore.Analytics.Pipelines.ExcludeRobots.CheckIpAddress,Sitecore.Analytics" />
       <processor type="Sitecore.Analytics.Pipelines.ExcludeRobots.AddResultToCache,Sitecore.Analytics" />
     </excludeRobots>
-    <!-- WebDAV feature pipelines. -->
-    <group groupName="WebDAV" name="WebDAV" patch:source="Sitecore.WebDAV.config">
-      <pipelines>
-        <autogenerateVersions>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultAutogenerateVersionsResolver, Sitecore.Kernel" />
-        </autogenerateVersions>
-        <resolveDatabase>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.OptionsDatabaseResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultDatabaseResolver, Sitecore.Kernel" />
-        </resolveDatabase>
-        <resolveRootItem>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultRootItemResolver, Sitecore.Kernel" />
-        </resolveRootItem>
-        <updateProperties>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultUpdatePropertiesHandler, Sitecore.Kernel" />
-        </updateProperties>
-        <getProperties>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultPropertiesResolver, Sitecore.Kernel">
-            <supportedProperties hint="raw:AddPropertyMapping">
-              <map name="ItemID" value="$!item.ID.ToString()" />
-            </supportedProperties>
-          </processor>
-        </getProperties>
-        <validateOperation>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.ReadOnlyModeValidator, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultOperationValidator, Sitecore.Kernel" />
-        </validateOperation>
-        <resolveMode>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.OptionsWebDAVModeResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultModeResolver, Sitecore.Kernel" />
-        </resolveMode>
-        <resolveUser>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.OptionsUserResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultUserResolver, Sitecore.Kernel" />
-        </resolveUser>
-        <resolveView>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.OptionsViewResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.UserOptionsViewResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultViewResolver, Sitecore.Kernel" />
-        </resolveView>
-        <resolveSite>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.OptionsSiteResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultSiteResolver, Sitecore.Kernel" />
-        </resolveSite>
-        <requireAuthentication>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.RequestRequireauthenticationResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.OptionsRequireAuthenticationResolver, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultRequireAuthenticationResolver, Sitecore.Kernel" />
-        </requireAuthentication>
-        <resolveWebDAVState>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultResolveWebDAVState, Sitecore.Kernel" />
-        </resolveWebDAVState>
-        <associateUsernameWithLink>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.UseLinkBasedOnOS, Sitecore.Kernel" />
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.UseDefaultLinkSetting, Sitecore.Kernel" />
-        </associateUsernameWithLink>
-        <supportWebDAVUrl>
-          <processor type="Sitecore.Pipelines.WebDAV.Processors.DefaultSupportWebDAVUrlResolver, Sitecore.Kernel" />
-        </supportWebDAVUrl>
-      </pipelines>
-    </group>
   </pipelines>
   <!-- RETRYER
          When enabled, the Retryer resends failed database requests a specified number of times.
@@ -1557,20 +1490,6 @@
     </agent>
     <agent type="Sitecore.Analytics.Tasks.UpdateReportsSummaryTask, Sitecore.Analytics" method="Run" interval="00:30:00" patch:source="Sitecore.Analytics.config">
       <UpdateReportsSummaryAt>23:30:00</UpdateReportsSummaryAt>
-    </agent>
-    <!-- Agent to cleanup obsolete File Drop Area field media data -->
-    <agent type="Sitecore.Tasks.CleanupFDAObsoleteMediaData" method="Run" interval="1.00:00:00" patch:source="Sitecore.WebDAV.config">
-      <databases hint="raw:AddDatabase">
-        <database name="master" />
-        <database name="web" />
-      </databases>
-      <LogActivity>true</LogActivity>
-      <RebuildLinks>false</RebuildLinks>
-    </agent>
-    <!-- Agent to cleanup obsolete WebDAV links -->
-    <agent type="Sitecore.Tasks.WebDAVOptionsCleanupAgent" method="Run" interval="1.00:00:00" patch:source="Sitecore.WebDAV.config">
-      <LogActivity>true</LogActivity>
-      <WebDAVLinkExpirationPeriod>1.00:00:00</WebDAVLinkExpirationPeriod>
     </agent>
   </scheduling>
   <!-- PROCESSORS
@@ -2721,8 +2640,6 @@
       <!-- Example
         <prefix value="-/media"/>
         -->
-      <!-- Prefix to identify WebDAV media requests -->
-      <prefix value="/sitecore_files" patch:source="Sitecore.WebDAV.config" />
     </mediaPrefixes>
     <requestParser type="Sitecore.Resources.Media.MediaRequest, Sitecore.Kernel" />
     <mediaTypes>
@@ -5416,75 +5333,6 @@
             Default: 20 (20 minutes)
       -->
     <setting name="Analytics.VisitEnd.ProcessingTimeOut" value="20" patch:source="Sitecore.Analytics.config" />
-    <!--  WEBDAV ASSOCIATE USERNAME WITH LINK
-            If "true" Sitecore associates the username of the current Sitecore user 
-            with a WebDAV link via a server side object which stores additional information as well, 
-            such as the current database and language.
-            Sitecore will not prompt for a username and password when serving WebDAV requests, 
-            as long as the server side object still exists at the time of the request.
-            This approach could potentially allow unauthorized access on unsecure networks.
-            Supported values: 
-              true -    the username of the current Sitecore user will always be associated with 
-                        with a WebDAV link via a server side object.
-              false -   the username of the current Sitecore user will never be associated with 
-                        with a WebDAV link via a server side object.
-              default - the username of the current Sitecore user will not be associated with 
-                        with a WebDAV link via a server side object unless it is absolutely required, 
-                        such as to support clients that donвЂ™t support opening WebDAV views in iframes.       
-            Default value: default
-      -->
-    <setting name="WebDAV.AssociateUsernameWithLink" value="default" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV FEATURE ENABLED
-            Determines if WebDAV feature should be enabled at all.
-            Specify 'true' to enable WebDAV and 'false' to disable the feature.
-            Default value: true
-      -->
-    <setting name="WebDAV.Enabled" value="true" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV ENGINE LOG LEVEL
-            Allows to enable \ disable \ configure IT Hit 
-            WebDAV Server Engine log file.
-            Supported values: All, Debug, Info, Warn, Error, Fatal, Off
-            Default value: Off
-      -->
-    <setting name="WebDAV.EngineLogLevel" value="Off" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV FILE DROP AREA MEDIA LOCATION
-            The location of media items related to a File Drop Area media items.
-            Default value: /sitecore/media library
-      -->
-    <setting name="WebDAV.FileDropAreaMediaLocation" value="/sitecore/media library" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV FOLDER
-            Folder that is configured for processing WebDAV requests.
-      -->
-    <setting name="WebDAV.Folder" value="/sitecore_files" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV LICENSE FILE
-            Indicates the location of license file for WebDAV Engine.
-      -->
-    <setting name="WebDAV.LicenseFile" value="C:\inetpub\wwwroot\dms\Data/webdav.lic" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV MEDIA HANDLER NAME
-            Indicates the WebDAV handler name.
-      -->
-    <setting name="WebDAV.MediaHandlerName" value="sitecore_webDAV.ashx" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV REQUIRE AUTHENTICATION
-            If "true" Sitecore will prompt for a username and password if the username is not available.
-            If "false" Sitecore will not prompt for a username and password of the username 
-            even if it is not available. Sitecore will only provide access to files, in this case, 
-            if they are available to the Anonymous user.
-            Default value: true
-      -->
-    <setting name="WebDAV.PromptWhenUsernameUnknown" value="true" patch:source="Sitecore.WebDAV.config" />
-    <!--  WEBDAV URL DISPLAY NAME
-            The last part of WebDAV URL before the path to the media item.
-            The value of this setting will be shown in the WebDAV view
-            as the root folder for the media library, if the computer is configured to display folder names.
-            Default value: /media
-      -->
-    <setting name="WebDAV.URLDisplayName" value="/media" patch:source="Sitecore.WebDAV.config" />
-    <!-- WEBDAV USE SHORT URL
-           Uses a shorter URL format for opening WebDAV folders, using the unique ID of the folder.
-           Setting this to false will use the full media library path in the WebDAV URL, which can reduce performance.
-           Default value: true
-      -->
-    <setting name="WebDAV.UseShortURL" value="true" patch:source="Sitecore.WebDAV.config" />
   </settings>
   <!--
     Analytics provider for Microsoft SQL Server:
@@ -6039,35 +5887,4 @@
       </rule>
     </rules>
   </AntiCsrf>
-  <!--  The webDAVPrefix variable defines the relative path to the WebDAV folder.
-          The specified WebDAV folder MUST be configured for processing WebDAV requests.
-    -->
-  <sc.variable name="webDAVPrefix" value="/sitecore_files" patch:source="Sitecore.WebDAV.config" />
-  <!-- WebDAV configuration -->
-  <webdav patch:source="Sitecore.WebDAV.config">
-    <authentication type="Sitecore.Configuration.WebDAVConfiguration+Authentication, Sitecore.Kernel" singleInstance="true">
-      <preferredAuthentication>Digest</preferredAuthentication>
-      <authentications hint="raw:AddAuthenticationMapping" />
-    </authentication>
-    <views defaultProvider="Sitecoreple" singleInstance="true">
-      <providers>
-        <clear />
-        <add name="Detailed" description="Show versioned files in folders" type="Sitecore.Data.Views.DetailedWebDAVView, Sitecore.Kernel" />
-        <add name="Sitecoreple" description="Show only latest version of files" type="Sitecore.Data.Views.SitecorepleWebDAVView, Sitecore.Kernel" />
-      </providers>
-    </views>
-    <locking defaultProvider="IDTableLockProvider" singleInstance="true">
-      <providers>
-        <clear />
-        <add name="IDTableLockProvider" type="Sitecore.Data.Locking.IDTableWebDAVLockingProvider, Sitecore.Kernel" />
-      </providers>
-    </locking>
-    <lockNull defaultProvider="CacheLockNullProvider" singleInstance="true">
-      <providers>
-        <clear />
-        <add name="CacheLockNullProvider" type="Sitecore.Data.Locking.WebDAVCacheLockNullProvider, Sitecore.Kernel" />
-      </providers>
-    </lockNull>
-    <optionStore type="Sitecore.Configuration.IDTableWebDAVOptionStore, Sitecore.Kernel" singleInstance="true" />
-  </webdav>
 </sitecore>

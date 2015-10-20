@@ -81,6 +81,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Core\BuilderTestsData\4\out\showconfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Core\BuilderTestsData\4\out\web.config.result.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Core\BuilderTestsData\1\out\showconfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -120,6 +126,75 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Commands.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\ConnectionStrings.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\ConnectionStringsOracle.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\FieldTypes.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Icons.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Include\Sitecore.Analytics.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Include\Sitecore.Analytics.ExcludeRobots.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Include\Sitecore.Analytics.Fix.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Include\Sitecore.AntiCsrf.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Include\Sitecore.Shell.MarketingAutomation.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Include\Sitecore.WebDAV.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\LanguageDefinitions.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\MimeTypes.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Portraits.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Prefetch\Common.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Prefetch\Core.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Prefetch\Master.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Prefetch\Web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Prototypes.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Security\Domains.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\Security\GlobalRoles.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\App_Config\XamlSharp.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Core\BuilderTestsData\4\in\web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Core\BuilderTestsData\1\in\App_Config\Commands.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

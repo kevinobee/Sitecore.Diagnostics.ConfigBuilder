@@ -9,6 +9,22 @@
 
   internal static class XmlPatchUtils
   {
+    [NotNull]
+    private static readonly object SyncRoot = new object();
+
+    [NotNull]
+    private static readonly List<string> definedRoles = new List<string>();
+
+    [PublicAPI]
+    [NotNull]
+    public static IEnumerable<string> DefinedRoles
+    {
+      get
+      {
+        return definedRoles.ToArray();
+      }
+    }
+
     internal static void AssignAttributes([NotNull] XmlNode target, [NotNull] IEnumerable<IXmlNode> attributes)
     {
       Assert.ArgumentNotNull(target, "target");
@@ -76,8 +92,8 @@
       Assert.ArgumentNotNull(ns, "ns");
 
       var source1 = from a in patch.GetAttributes()
-                                     where (a.NamespaceURI != ns.PatchNamespace) && (a.NamespaceURI != "http://www.w3.org/2000/xmlns/")
-                                     select new XmlNodeInfo { NodeType = a.NodeType, NamespaceURI = (a.NamespaceURI == ns.SetNamespace) ? string.Empty : a.NamespaceURI, LocalName = a.LocalName, Value = a.Value, Prefix = a.Prefix };
+                    where (a.NamespaceURI != ns.PatchNamespace && a.NamespaceURI != ns.RoleNamespace) && (a.NamespaceURI != "http://www.w3.org/2000/xmlns/")
+                    select new XmlNodeInfo { NodeType = a.NodeType, NamespaceURI = (a.NamespaceURI == ns.SetNamespace) ? string.Empty : a.NamespaceURI, LocalName = a.LocalName, Value = a.Value, Prefix = a.Prefix };
       var source = source1.ToArray();
       if (!source.Any())
       {
@@ -179,6 +195,7 @@
             var source = new List<IXmlNode>();
             var attributes = new List<IXmlNode>();
             InsertOperation operation = null;
+            var exit = false;
             foreach (IXmlNode node in element.GetAttributes())
             {
               if (node.NamespaceURI == ns.PatchNamespace)
@@ -205,6 +222,10 @@
                 };
                 attributes.Add(item);
               }
+              else if (node.NamespaceURI == ns.RoleNamespace)
+              {
+                exit = !ProcessRolesNamespace(node);
+              }
               else if (node.Prefix != "xmlns")
               {
                 var info2 = new XmlNodeInfo
@@ -216,6 +237,11 @@
                   Value = node.Value
                 };
                 source.Add(info2);
+              }
+
+              if (exit)
+              {
+                break;
               }
             }
 
@@ -295,11 +321,68 @@
       }
     }
 
+    internal static bool ProcessRolesNamespace([NotNull] IXmlNode node)
+    {
+      Assert.ArgumentNotNull(node, "node");
+
+      var name = node.LocalName;
+      var value = node.Value;
+      return ProcessRolesNamespace(name, value);
+    }
+
+    internal static bool ProcessRolesNamespace(string name, string value)
+    {
+      switch (name)
+      {
+        case "d":
+        case "define":
+          if (!string.IsNullOrEmpty(value))
+          {
+            var roles = value.Split("|,;".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            foreach (var role in roles)
+            {
+              lock (SyncRoot)
+              {
+                if (definedRoles.All(x => !role.Equals(x, StringComparison.OrdinalIgnoreCase)))
+                {
+                  definedRoles.Add(role);
+                }
+              }
+            }
+          }
+
+          break;
+
+        case "r":
+        case "require":
+          if (!string.IsNullOrEmpty(value) && definedRoles.All(x => !value.Equals(x, StringComparison.OrdinalIgnoreCase)))
+          {
+            return false;
+          }
+
+          break;
+      }
+      return true;
+    }
+
     internal static void MergeNodes([NotNull] XmlNode target, [NotNull] IXmlElement patch, [NotNull] XmlPatchNamespaces ns)
     {
       Assert.ArgumentNotNull(target, "target");
       Assert.ArgumentNotNull(patch, "patch");
       Assert.ArgumentNotNull(ns, "ns");
+
+      foreach (var node in patch.GetAttributes())
+      {
+        if (node.NamespaceURI != ns.RoleNamespace)
+        {
+          continue;
+        }
+
+        if (!ProcessRolesNamespace(patch))
+        {
+          return;
+        }
+      }
 
       if ((target.NamespaceURI == patch.NamespaceURI) && (target.LocalName == patch.LocalName))
       {

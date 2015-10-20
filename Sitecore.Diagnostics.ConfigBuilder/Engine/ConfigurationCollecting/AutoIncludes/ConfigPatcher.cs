@@ -11,6 +11,8 @@
 
     internal const string SetNamespace = "http://www.sitecore.net/xmlconfig/set/";
 
+    internal const string RoleNamespace = "http://www.sitecore.net/xmlconfig/role/";
+
     [NotNull]
     private readonly XmlPatcher Patcher;
 
@@ -22,7 +24,7 @@
       Assert.ArgumentNotNull(node, "node");
 
       this.Root = node;
-      this.Patcher = new XmlPatcher(SetNamespace, ConfigurationNamespace);
+      this.Patcher = new XmlPatcher(RoleNamespace, SetNamespace, ConfigurationNamespace);
     }
 
     internal void ApplyPatch(TextReader patch)

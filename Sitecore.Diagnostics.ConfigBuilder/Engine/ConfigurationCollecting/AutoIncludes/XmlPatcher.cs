@@ -8,13 +8,15 @@
     [NotNull]
     private readonly XmlPatchNamespaces Namespaces;
 
-    internal XmlPatcher([NotNull] string setNamespace, [NotNull] string patchNamespace)
+    internal XmlPatcher([NotNull] string roleNamespace, [NotNull] string setNamespace, [NotNull] string patchNamespace)
     {
+      Assert.ArgumentNotNull(roleNamespace, "roleNamespace");
       Assert.ArgumentNotNull(setNamespace, "setNamespace");
       Assert.ArgumentNotNull(patchNamespace, "patchNamespace");
 
       var namespaces = new XmlPatchNamespaces
       {
+        RoleNamespace = roleNamespace,
         SetNamespace = setNamespace,
         PatchNamespace = patchNamespace
       };

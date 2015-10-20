@@ -9,5 +9,8 @@
 
     [NotNull]
     public string SetNamespace { get; set; }
+
+    [NotNull]
+    public string RoleNamespace { get; set; }
   }
 }

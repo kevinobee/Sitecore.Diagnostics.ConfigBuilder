@@ -26,7 +26,7 @@
     <add key="DictionaryFolder" value="/sitecore/shell/controls/rich text editor/Dictionaries/" />
     <add key="Lucene.Net.FSDirectory.class" value="Sitecore.Search.FSDirectory, Sitecore.Kernel" />
   </appSettings>
-  <sitecore database="SqlServer" xmlns:patch="http://www.sitecore.net/xmlconfig/">
+  <sitecore database="SqlServer" define="authoring|publishing|delivery" xmlns:role="http://www.sitecore.net/xmlconfig/role/" xmlns:patch="http://www.sitecore.net/xmlconfig/">
     <sc.variable name="dataFolder" value="C:\inetpub\wwwroot\dms\Data" />
     <sc.variable name="mediaFolder" value="/upload" />
     <sc.variable name="tempFolder" value="/temp" />
@@ -276,7 +276,7 @@
       <param connectionStringName="core" />
     </TaskDatabase>
     <!-- ID TABLE -->
-    <IDTable type="Sitecore.Data.SqlServer.SqlServerIDTable, Sitecore.Kernel" singleInstance="true">
+    <IDTable type="Sitecore.Data.SqlServer.SqlServerIDTable, Sitecore.Kernel" singleInstance="true" role:require="authoring|publishing">
       <param connectionStringName="master" />
       <param desc="cacheSize">500KB</param>
     </IDTable>
@@ -991,7 +991,7 @@
         </NotificationProvider>
       </database>
       <!-- master -->
-      <database id="master" singleInstance="true" type="Sitecore.Data.Database, Sitecore.Kernel">
+      <database id="master" singleInstance="true" type="Sitecore.Data.Database, Sitecore.Kernel" role:require="authoring|publishing">
         <param desc="name">$(id)</param>
         <icon>People/16x16/cubes_blue.png</icon>
         <dataProviders hint="list:AddDataProvider">
@@ -1228,7 +1228,7 @@
                 <Tags>taskoption</Tags>
                 <Boost>1.9</Boost>
               </core-controlpanel>
-              <master type="Sitecore.Search.Crawlers.DatabaseCrawler, Sitecore.Kernel">
+              <master type="Sitecore.Search.Crawlers.DatabaseCrawler, Sitecore.Kernel" role:require="authoring|publishing">
                 <Database>master</Database>
                 <Tags>master content</Tags>
               </master>
@@ -1522,7 +1522,7 @@
         <LogActivity>true</LogActivity>
       </agent>
       <!-- Agent to process schedules embedded as items in a database -->
-      <agent type="Sitecore.Tasks.DatabaseAgent" method="Run" interval="00:10:00">
+      <agent type="Sitecore.Tasks.DatabaseAgent" method="Run" interval="00:10:00" role:require="authoring|publishing">
         <param desc="database">master</param>
         <param desc="schedule root">/sitecore/system/tasks/schedules</param>
         <LogActivity>true</LogActivity>
@@ -1537,19 +1537,19 @@
       <!-- Agent to clean up client data -->
       <agent type="Sitecore.Tasks.CompactClientDataAgent" method="Run" interval="04:00:00" />
       <!-- Agent to clean up history data -->
-      <agent type="Sitecore.Tasks.CleanupHistory" method="Run" interval="04:00:00" />
+      <agent type="Sitecore.Tasks.CleanupHistory" method="Run" interval="04:00:00" role:require="publishing" />
       <!-- Agent to clean up publishing queue -->
-      <agent type="Sitecore.Tasks.CleanupPublishQueue, Sitecore.Kernel" method="Run" interval="04:00:00">
+      <agent type="Sitecore.Tasks.CleanupPublishQueue, Sitecore.Kernel" method="Run" interval="04:00:00" role:require="publishing">
         <DaysToKeep>30</DaysToKeep>
       </agent>
       <!-- Agent to clean up the event queue -->
-      <agent type="Sitecore.Tasks.CleanupEventQueue, Sitecore.Kernel" method="Run" interval="04:00:00">
+      <agent type="Sitecore.Tasks.CleanupEventQueue, Sitecore.Kernel" method="Run" interval="04:00:00" role:require="publishing">
         <DaysToKeep>1</DaysToKeep>
       </agent>
       <!-- Agent to clear the HTML cache periodically -->
       <agent type="Sitecore.Tasks.HtmlCacheClearAgent" method="Run" interval="00:00:00" />
       <!-- Agent to publish database periodically -->
-      <agent type="Sitecore.Tasks.PublishAgent" method="Run" interval="00:00:00">
+      <agent type="Sitecore.Tasks.PublishAgent" method="Run" interval="00:00:00" role:require="publishing">
         <param desc="source database">master</param>
         <param desc="target database">web</param>
         <param desc="mode (full or smart or incremental)">incremental</param>
@@ -2710,16 +2710,16 @@
                         Attributes that are explicitly specified overwrite the attributes that are inherited from the source site.
     -->
     <sites>
-      <site name="shell" virtualFolder="/sitecore/shell" physicalFolder="/sitecore/shell" rootPath="/sitecore/content" startItem="/home" language="en" database="core" domain="sitecore" loginPage="/sitecore/login" content="master" contentStartItem="/Home" enableWorkflow="true" enableAnalytics="false" analyticsDefinitions="content" xmlControlPage="/sitecore/shell/default.aspx" browserTitle="Sitecore" htmlCacheSize="2MB" registryCacheSize="3MB" viewStateCacheSize="200KB" xslCacheSize="5MB" disableBrowserCaching="true" />
-      <site name="login" virtualFolder="/sitecore/login" physicalFolder="/sitecore/login" enableAnalytics="false" database="core" domain="sitecore" disableXmlControls="true" />
+      <site role:require="authoring" name="shell" virtualFolder="/sitecore/shell" physicalFolder="/sitecore/shell" rootPath="/sitecore/content" startItem="/home" language="en" database="core" domain="sitecore" loginPage="/sitecore/login" content="master" contentStartItem="/Home" enableWorkflow="true" enableAnalytics="false" analyticsDefinitions="content" xmlControlPage="/sitecore/shell/default.aspx" browserTitle="Sitecore" htmlCacheSize="2MB" registryCacheSize="3MB" viewStateCacheSize="200KB" xslCacheSize="5MB" disableBrowserCaching="true" />
+      <site role:require="authoring" name="login" virtualFolder="/sitecore/login" physicalFolder="/sitecore/login" enableAnalytics="false" database="core" domain="sitecore" disableXmlControls="true" />
       <site name="admin" virtualFolder="/sitecore/admin" physicalFolder="/sitecore/admin" enableAnalytics="false" enableWorkflow="true" domain="sitecore" loginPage="/sitecore/admin/login.aspx" />
       <site name="service" virtualFolder="/sitecore/service" physicalFolder="/sitecore/service" />
-      <site name="modules_shell" virtualFolder="/sitecore modules/shell" physicalFolder="/sitecore modules/shell" rootPath="/sitecore/content" startItem="/home" language="en" database="core" domain="sitecore" content="master" enableAnalytics="false" enableWorkflow="true" />
+      <site role:require="authoring" name="modules_shell" virtualFolder="/sitecore modules/shell" physicalFolder="/sitecore modules/shell" rootPath="/sitecore/content" startItem="/home" language="en" database="core" domain="sitecore" content="master" enableAnalytics="false" enableWorkflow="true" />
       <site name="modules_website" virtualFolder="/sitecore modules/web" physicalFolder="/sitecore modules/web" rootPath="/sitecore/content" startItem="/home" language="en" database="web" domain="extranet" allowDebug="true" cacheHtml="true" />
       <site name="website" virtualFolder="/" physicalFolder="/" rootPath="/sitecore/content" startItem="/home" database="web" domain="extranet" allowDebug="true" cacheHtml="true" htmlCacheSize="10MB" registryCacheSize="0" viewStateCacheSize="0" xslCacheSize="5MB" filteredItemsCacheSize="2MB" enablePreview="true" enableWebEdit="true" enableDebugger="true" disableClientData="false" />
       <site name="scheduler" enableAnalytics="false" domain="sitecore" />
       <site name="system" enableAnalytics="false" domain="sitecore" />
-      <site name="publisher" domain="sitecore" enableAnalytics="false" enableWorkflow="true" />
+      <site role:require="publishing" name="publisher" domain="sitecore" enableAnalytics="false" enableWorkflow="true" />
     </sites>
     <!-- CACHE SIZES -->
     <cacheSizes>

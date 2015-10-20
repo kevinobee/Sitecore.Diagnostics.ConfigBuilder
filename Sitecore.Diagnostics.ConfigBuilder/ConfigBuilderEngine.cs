@@ -10,6 +10,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder
   using Sitecore.Diagnostics.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Common;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting;
+  using Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting.AutoIncludes;
 
   public class ConfigBuilderEngine : IConfigBuilderEngine
   {
@@ -235,6 +236,15 @@ namespace Sitecore.Diagnostics.ConfigBuilder
       Assert.ArgumentNotNull(configuration, "configuration");
 
       var sitecoreNode = this.FindSitecoreNode(configuration);
+      
+      foreach (XmlNode attribute in sitecoreNode.Attributes)
+      {
+        if (attribute != null && attribute.NamespaceURI == ConfigPatcher.RoleNamespace)
+        {
+          XmlPatchUtils.ProcessRolesNamespace(attribute.LocalName, attribute.Value);
+        }
+      }
+
       var sitecoreConfiguration = new XmlDocument();
 
       var pathMapper = new PathMapper(webRootPath);
