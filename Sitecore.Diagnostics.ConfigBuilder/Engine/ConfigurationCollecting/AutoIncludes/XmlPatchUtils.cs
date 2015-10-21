@@ -225,6 +225,11 @@
               else if (node.NamespaceURI == ns.RoleNamespace)
               {
                 exit = !ProcessRolesNamespace(node);
+
+                if (exit)
+                {
+                  break;
+                }
               }
               else if (node.Prefix != "xmlns")
               {
@@ -238,11 +243,11 @@
                 };
                 source.Add(info2);
               }
+            }
 
-              if (exit)
-              {
-                break;
-              }
+            if (exit)
+            {
+              break;
             }
 
             nsManager = new XmlNamespaceManager(new NameTable());
