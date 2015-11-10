@@ -2,7 +2,8 @@
 {
   using System.Collections.Generic;
   using System.Xml;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Helpers;
 
   internal static class GlobalVariablesReplacer

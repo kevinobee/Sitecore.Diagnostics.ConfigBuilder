@@ -1,7 +1,8 @@
 ﻿namespace Sitecore.Diagnostics.ConfigBuilder
 {
   using System.Xml;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
 
   public static class ConfigBuilder
   {

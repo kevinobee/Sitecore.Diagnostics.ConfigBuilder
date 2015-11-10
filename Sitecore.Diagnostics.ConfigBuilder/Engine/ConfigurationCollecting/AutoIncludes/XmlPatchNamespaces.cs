@@ -1,6 +1,6 @@
 ﻿namespace Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting.AutoIncludes
 {
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base.Annotations;
 
   internal class XmlPatchNamespaces
   {

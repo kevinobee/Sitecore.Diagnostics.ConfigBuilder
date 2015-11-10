@@ -2,7 +2,8 @@
 {
   using System;
   using System.Xml;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Common;
 
   internal static class XmlUtil

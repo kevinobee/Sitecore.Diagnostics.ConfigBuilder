@@ -1,7 +1,7 @@
 ﻿namespace Sitecore.Diagnostics.ConfigBuilder.Engine.Common
 {
   using System;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base.Annotations;
 
   public static class ConfigBuilderLog
   {

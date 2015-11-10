@@ -3,7 +3,8 @@
   using System.IO;
   using System.Text;
   using System.Xml;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
 
   internal class ConfigPatcher
   {

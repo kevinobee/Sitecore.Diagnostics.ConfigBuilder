@@ -9,8 +9,8 @@
   using System.Xml;
   using System.Xml.Linq;
   using System.Xml.XPath;
-  using Sitecore.Diagnostics;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
 
   public static class Normalizer 
   {

@@ -6,8 +6,8 @@ namespace Sitecore.Diagnostics.ConfigBuilder
   using System.IO;
   using System.Linq;
   using System.Xml;
-  using Sitecore.Diagnostics;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Common;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting.AutoIncludes;

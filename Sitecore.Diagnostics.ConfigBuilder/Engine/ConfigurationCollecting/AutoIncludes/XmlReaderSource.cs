@@ -3,7 +3,8 @@
   using System;
   using System.Collections.Generic;
   using System.Xml;
-  using Sitecore.Diagnostics.Annotations;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
 
   internal class XmlReaderSource : IXmlElement, IXmlSource
   {
