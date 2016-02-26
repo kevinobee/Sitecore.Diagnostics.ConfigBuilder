@@ -3,44 +3,55 @@
   using System;
   using System.Collections.Generic;
   using System.IO;
+  using System.IO.Abstractions;
+
   using System.Xml;
   using Sitecore.Diagnostics.Base;
   using Sitecore.Diagnostics.Base.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Common;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.ConfigurationCollecting.AutoIncludes;
 
-  internal static class AutoIncludeFilesLoader
+  internal class AutoIncludeFilesLoader
   {
-    internal static void LoadAutoIncludeFiles([NotNull] XmlNode element, [NotNull] PathMapper mapper, [NotNull] IEnumerable<string> includeFoldersPaths)
+    private IFileSystem FileSystem;
+
+    internal AutoIncludeFilesLoader(IFileSystem fileSystem)
+    {
+      Assert.ArgumentNotNull(fileSystem, "fileSystem");
+
+      this.FileSystem = fileSystem;
+    }
+
+    internal void LoadAutoIncludeFiles([NotNull] XmlNode element, [NotNull] PathMapper mapper, [NotNull] IEnumerable<string> includeFoldersPaths)
     {
       Assert.ArgumentNotNull(element, "element");
       Assert.ArgumentNotNull(mapper, "mapper");
       Assert.ArgumentNotNull(includeFoldersPaths, "includeFoldersPaths");
 
-      var patcher = new ConfigPatcher(element);
+      var patcher = new ConfigPatcher(this.FileSystem, element);
       foreach (var includeFolderPath in includeFoldersPaths)
       {
-        LoadAutoIncludeFiles(patcher, mapper.MapPath(includeFolderPath));
+        this.LoadAutoIncludeFiles(patcher, mapper.MapPath(includeFolderPath));
       }
     }
 
-    private static void LoadAutoIncludeFiles([NotNull] ConfigPatcher patcher, [NotNull] string folder)
+    private void LoadAutoIncludeFiles([NotNull] ConfigPatcher patcher, [NotNull] string folder)
     {
       Assert.ArgumentNotNull(patcher, "patcher");
       Assert.ArgumentNotNull(folder, "folder");
 
       try
       {
-        if (!Directory.Exists(folder))
+        if (!this.FileSystem.Directory.Exists(folder))
         {
           return;
         }
 
-        foreach (var str in Directory.GetFiles(folder, "*.config"))
+        foreach (var str in this.FileSystem.Directory.GetFiles(folder, "*.config"))
         {
           try
           {
-            if ((File.GetAttributes(str) & FileAttributes.Hidden) == 0)
+            if ((this.FileSystem.File.GetAttributes(str) & FileAttributes.Hidden) == 0)
             {
               patcher.ApplyPatch(str);
             }
@@ -51,13 +62,13 @@
           }
         }
 
-        foreach (string str2 in Directory.GetDirectories(folder))
+        foreach (string str2 in this.FileSystem.Directory.GetDirectories(folder))
         {
           try
           {
-            if ((File.GetAttributes(str2) & FileAttributes.Hidden) == 0)
+            if ((this.FileSystem.File.GetAttributes(str2) & FileAttributes.Hidden) == 0)
             {
-              LoadAutoIncludeFiles(patcher, str2);
+              this.LoadAutoIncludeFiles(patcher, str2);
             }
           }
           catch (Exception exception2)

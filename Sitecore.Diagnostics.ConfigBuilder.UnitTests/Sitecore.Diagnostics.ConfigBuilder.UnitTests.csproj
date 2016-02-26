@@ -41,6 +41,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.IO.Abstractions">
+      <HintPath>..\packages\System.IO.Abstractions.2.0.0.123\lib\net40\System.IO.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
@@ -412,6 +415,7 @@
     <None Include="Core\BuilderTestsData\3\in\web.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Choose>

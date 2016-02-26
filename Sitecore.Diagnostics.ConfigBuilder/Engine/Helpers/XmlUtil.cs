@@ -1,6 +1,10 @@
-﻿namespace Sitecore.Diagnostics.ConfigBuilder.Engine.Helpers
+﻿using System.IO;
+using System.Linq;
+
+namespace Sitecore.Diagnostics.ConfigBuilder.Engine.Helpers
 {
   using System;
+  using System.IO.Abstractions;
   using System.Xml;
   using Sitecore.Diagnostics.Base;
   using Sitecore.Diagnostics.Base.Annotations;
@@ -9,16 +13,41 @@
   internal static class XmlUtil
   {
     [NotNull]
-    internal static XmlDocument LoadXmlFile([NotNull] string filename, [NotNull] PathMapper pathMapper)
+    internal static XmlDocument LoadXml([NotNull] IFileSystem fileSystem, [NotNull] string filename, [NotNull] PathMapper pathMapper)
     {
+      Assert.ArgumentNotNull(fileSystem, "fileSystem");
       Assert.ArgumentNotNull(filename, "filename");
       Assert.ArgumentNotNull(pathMapper, "pathMapper");
 
       var document = new XmlDocument();
       var mappedPath = pathMapper.MapPath(filename);
-      document.Load(mappedPath);
+      LoadXml(fileSystem, document, mappedPath);
 
       return document;
+    }
+
+    internal static void LoadXml([NotNull] IFileSystem fileSystem, [NotNull]XmlDocument xml, [NotNull] string filePath)
+    {
+      Assert.ArgumentNotNull(fileSystem, "fileSystem");
+      Assert.ArgumentNotNull(xml, "xml");
+      Assert.ArgumentNotNullOrEmpty(filePath, "filePath");
+
+      using (var readFileStram = fileSystem.File.OpenRead(filePath))
+      {
+        xml.Load(readFileStram);
+      }
+    }
+
+    internal static void SaveXml([NotNull] IFileSystem fileSystem, [NotNull]XmlDocument xml, [NotNull] string filePath)
+    {
+      Assert.ArgumentNotNull(fileSystem, "fileSystem");
+      Assert.ArgumentNotNull(xml, "xml");
+      Assert.ArgumentNotNullOrEmpty(filePath, "filePath");
+
+      using (var writeFileStream = fileSystem.File.Open(filePath, FileMode.Create, FileAccess.Write))
+      {
+        xml.Save(writeFileStream);
+      }
     }
 
     internal static void TransferAttributes([NotNull] XmlNode source, [CanBeNull] XmlNode target)

@@ -2,15 +2,25 @@
 {
   using System;
   using System.Collections;
+  using System.IO.Abstractions;
   using System.Xml;
   using Sitecore.Diagnostics.Base;
   using Sitecore.Diagnostics.Base.Annotations;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Common;
   using Sitecore.Diagnostics.ConfigBuilder.Engine.Helpers;
 
-  internal static class IncludeFileExpander
+  internal class IncludeFileExpander
   {
-    internal static void ExpandIncludeFiles([NotNull] XmlNode rootNode, [NotNull] Hashtable cycleDetector, [NotNull] PathMapper pathMapper)
+    private readonly IFileSystem FileSystem;
+
+    internal IncludeFileExpander([NotNull ]IFileSystem fileSystem)
+    {
+      Assert.ArgumentNotNull(fileSystem, "fileSystem");
+
+      this.FileSystem = fileSystem;
+    }
+
+    internal void ExpandIncludeFiles([NotNull] XmlNode rootNode, [NotNull] Hashtable cycleDetector, [NotNull] PathMapper pathMapper)
     {
       Assert.ArgumentNotNull(rootNode, "rootNode");
       Assert.ArgumentNotNull(cycleDetector, "cycleDetector");
@@ -18,19 +28,19 @@
 
       if (rootNode.LocalName == "sc.include")
       {
-        ExpandIncludeFile(rootNode, cycleDetector, pathMapper);
+        this.ExpandIncludeFile(rootNode, cycleDetector, pathMapper);
       }
       else
       {
         var list = rootNode.SelectNodes(".//sc.include");
         for (var i = 0; i < list.Count; i++)
         {
-          ExpandIncludeFile(list[i], cycleDetector, pathMapper);
+          this.ExpandIncludeFile(list[i], cycleDetector, pathMapper);
         }
       }
     }
 
-    private static void ExpandIncludeFile([NotNull] XmlNode xmlNode, [NotNull] Hashtable cycleDetector, [NotNull] PathMapper pathMapper)
+    private void ExpandIncludeFile([NotNull] XmlNode xmlNode, [NotNull] Hashtable cycleDetector, [NotNull] PathMapper pathMapper)
     {
       Assert.ArgumentNotNull(xmlNode, "xmlNode");
       Assert.ArgumentNotNull(cycleDetector, "cycleDetector");
@@ -50,7 +60,7 @@
             filePath));
       }
 
-      XmlDocument document = XmlUtil.LoadXmlFile(filePath, pathMapper);
+      XmlDocument document = XmlUtil.LoadXml(this.FileSystem, filePath, pathMapper);
       if (document.DocumentElement == null)
       {
         return;
@@ -60,7 +70,7 @@
       var newChild = xmlNode.OwnerDocument.ImportNode(document.DocumentElement, true);
       parentNode.ReplaceChild(newChild, xmlNode);
       cycleDetector.Add(filePath, string.Empty);
-      ExpandIncludeFiles(newChild, cycleDetector, pathMapper);
+      this.ExpandIncludeFiles(newChild, cycleDetector, pathMapper);
       cycleDetector.Remove(filePath);
       while (newChild.FirstChild != null)
       {

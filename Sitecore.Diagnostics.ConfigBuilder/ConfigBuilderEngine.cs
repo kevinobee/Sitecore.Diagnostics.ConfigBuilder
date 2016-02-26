@@ -1,9 +1,12 @@
+using Sitecore.Diagnostics.ConfigBuilder.Engine.Helpers;
+
 namespace Sitecore.Diagnostics.ConfigBuilder
 {
   using System;
   using System.Collections;
   using System.Collections.Generic;
   using System.IO;
+  using System.IO.Abstractions;
   using System.Linq;
   using System.Xml;
   using Sitecore.Diagnostics.Base;
@@ -14,6 +17,19 @@ namespace Sitecore.Diagnostics.ConfigBuilder
 
   public class ConfigBuilderEngine : IConfigBuilderEngine
   {
+    [NotNull]
+    protected IFileSystem FileSystem;
+
+    public ConfigBuilderEngine()
+      : this(new FileSystem())
+    {
+    }
+
+    public ConfigBuilderEngine(IFileSystem fileSystem)
+    {
+      this.FileSystem = fileSystem;
+    }
+
     #region IConfigBuilderEngine
 
     /// <summary>
@@ -28,10 +44,12 @@ namespace Sitecore.Diagnostics.ConfigBuilder
       Assert.ArgumentNotNullOrEmpty(webConfigFilePath, "webConfigFilePath");
       Assert.ArgumentNotNull(outputFilePath, "outputFilePath");
 
-      if (!File.Exists(webConfigFilePath))
+      if (!this.FileSystem.File.Exists(webConfigFilePath))
       {
         throw new InvalidOperationException("The webConfigFilePath parameter points to missing file (" + webConfigFilePath + ")");
       }
+
+      var normalizer = new Normalizer(this.FileSystem);
 
       if (buildWebConfigResult)
       {
@@ -45,7 +63,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder
 
         if (normalizeOutput)
         {
-          Normalizer.Normalize(outputFilePath, outputFilePath + ".normalized.xml");
+          normalizer.Normalize(outputFilePath, outputFilePath + ".normalized.xml");
         }
 
         return;
@@ -61,7 +79,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder
 
       if (normalizeOutput)
       {
-        Normalizer.Normalize(outputFilePath, outputFilePath + ".normalized.xml");
+        normalizer.Normalize(outputFilePath, outputFilePath + ".normalized.xml");
       }
     }
 
@@ -76,23 +94,25 @@ namespace Sitecore.Diagnostics.ConfigBuilder
     {
       Assert.ArgumentNotNullOrEmpty(webConfigFilePath, "webConfigFilePath");
 
-      if (!File.Exists(webConfigFilePath))
+      if (!this.FileSystem.File.Exists(webConfigFilePath))
       {
         throw new InvalidOperationException("The webConfigFilePath parameter points to missing file (" + webConfigFilePath + ")");
       }
+
+      var normalizer = new Normalizer(this.FileSystem);
 
       if (buildWebConfigResult)
       {
         var webConfig = this.BuildWebConfigResult(webConfigFilePath);
 
-        var xmlDocument = normalizeOutput ? Normalizer.Normalize(webConfig) : webConfig;
+        var xmlDocument = normalizeOutput ? normalizer.Normalize(webConfig) : webConfig;
 
         return this.OptimizeNamespaces(xmlDocument);
       }
 
       var showConfig = this.BuildShowConfig(webConfigFilePath);
 
-      return this.OptimizeNamespaces(normalizeOutput ? Normalizer.Normalize(showConfig) : showConfig);
+      return this.OptimizeNamespaces(normalizeOutput ? normalizer.Normalize(showConfig) : showConfig);
     }
 
     #endregion
@@ -106,8 +126,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder
     protected virtual XmlTextWriter OpenWriter([NotNull] string outputFilePath)
     {
       Assert.ArgumentNotNullOrEmpty(outputFilePath, "outputFilePath");
-
-      return new XmlTextWriter(new StreamWriter(outputFilePath)) { Formatting = Formatting.Indented };
+      return new XmlTextWriter(new StreamWriter(outputFilePath)) { Formatting = Formatting.Indented};
     }
 
     /// <summary>
@@ -119,9 +138,11 @@ namespace Sitecore.Diagnostics.ConfigBuilder
       Assert.ArgumentNotNullOrEmpty(filePath, "filePath");
 
       var xml = new XmlDocument();
-      xml.Load(filePath);
+      XmlUtil.LoadXml(this.FileSystem, xml, filePath);
+      
       this.OptimizeNamespaces(xml);
-      xml.Save(filePath);
+
+      XmlUtil.SaveXml(this.FileSystem, xml, filePath);
     }
 
     /// <summary>
@@ -144,7 +165,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder
     protected virtual XmlDocument BuildWebConfigResult([NotNull] string webConfigFilePath)
     {
       Assert.ArgumentNotNullOrEmpty(webConfigFilePath, "webConfigFilePath");
-      Assert.IsTrue(File.Exists(webConfigFilePath), string.Format("The {0} file doesn't exist", webConfigFilePath));
+      Assert.IsTrue(this.FileSystem.File.Exists(webConfigFilePath), string.Format("The {0} file doesn't exist", webConfigFilePath));
 
       var webConfig = this.ReadConfigFile(webConfigFilePath);
       Assert.IsNotNull(webConfig, "webConfig");
@@ -167,10 +188,10 @@ namespace Sitecore.Diagnostics.ConfigBuilder
             filePath = Path.Combine(websiteFolderPath, filePath);
           }
 
-          if (File.Exists(filePath))
+          if (this.FileSystem.File.Exists(filePath))
           {
             var document = new XmlDocument();
-            document.Load(filePath);
+            XmlUtil.LoadXml(this.FileSystem, document, filePath);
             XmlHelper.ReplaceElement(element, document.DocumentElement);
           }
         }
@@ -204,7 +225,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder
     protected virtual XmlDocument BuildShowConfig([NotNull] string webConfigFilePath)
     {
       Assert.ArgumentNotNullOrEmpty(webConfigFilePath, "webConfigFilePath");
-      Assert.IsTrue(File.Exists(webConfigFilePath), "The web.config file doesn't exist");
+      Assert.IsTrue(this.FileSystem.File.Exists(webConfigFilePath), "The web.config file doesn't exist");
 
       var webConfig = this.BuildWebConfigResult(webConfigFilePath);
 
@@ -221,7 +242,7 @@ namespace Sitecore.Diagnostics.ConfigBuilder
     {
       Assert.ArgumentNotNullOrEmpty(configFilePath, "configFilePath");
 
-      var raw = File.ReadAllText(configFilePath);
+      var raw = this.FileSystem.File.ReadAllText(configFilePath);
       var xml = this.RepairXml(raw);
       var xmlDocument = new XmlDocument();
       xmlDocument.LoadXml(xml);
@@ -253,11 +274,13 @@ namespace Sitecore.Diagnostics.ConfigBuilder
       sitecoreConfiguration.AppendChild(sitecoreConfiguration.ImportNode(sitecoreNode, true));
 
       // Merge <sc.include path="*.config" />
-      IncludeFileExpander.ExpandIncludeFiles(sitecoreConfiguration.DocumentElement, new Hashtable(), pathMapper);
+      var includeExpander = new IncludeFileExpander(this.FileSystem);
+      includeExpander.ExpandIncludeFiles(sitecoreConfiguration.DocumentElement, new Hashtable(), pathMapper);
 
       // Merge App_Config/Include/**.config files
       var includeFoldersPaths = this.GetIncludeFoldersPaths();
-      AutoIncludeFilesLoader.LoadAutoIncludeFiles(sitecoreConfiguration.DocumentElement, pathMapper, includeFoldersPaths);
+      var includeLoader = new AutoIncludeFilesLoader(this.FileSystem);
+      includeLoader.LoadAutoIncludeFiles(sitecoreConfiguration.DocumentElement, pathMapper, includeFoldersPaths);
 
       // Replace variables like $(variableName)
       GlobalVariablesReplacer.ReplaceGlobalVariables(sitecoreConfiguration.DocumentElement);
