@@ -4,6 +4,7 @@
   using System.Collections;
   using System.Collections.Generic;
   using System.IO;
+  using System.IO.Abstractions;
   using System.Linq;
   using System.Text;
   using System.Xml;
@@ -11,9 +12,25 @@
   using System.Xml.XPath;
   using Sitecore.Diagnostics.Base;
   using Sitecore.Diagnostics.Base.Annotations;
+  using Sitecore.Diagnostics.ConfigBuilder.Engine.Helpers;
 
-  public static class Normalizer 
+  public class Normalizer
   {
+    [NotNull]
+    private IFileSystem FileSystem;
+
+    public Normalizer()
+      : this(new FileSystem())
+    {
+    }
+
+    public Normalizer(IFileSystem fileSystem)
+    {
+      Assert.ArgumentNotNull(fileSystem, "fileSystem");
+
+      this.FileSystem = fileSystem;
+    }
+
     [NotNull]
     private static string GetAttributeValueSafe([NotNull] string attributeName, [NotNull] XElement e)
     {
@@ -46,18 +63,18 @@
       }
     }
 
-    public static void Normalize([NotNull] string filePath, [NotNull] string outputFilePath)
+    public void Normalize([NotNull] string filePath, [NotNull] string outputFilePath)
     {
       Assert.ArgumentNotNull(filePath, "filePath");
       Assert.ArgumentNotNull(outputFilePath, "outputFilePath");
 
       // code was lost and then restored from reflector
-      var document = Normalize(filePath);
+      var document = this.Normalize(filePath);
       document.Save(outputFilePath);
     }
 
     [NotNull]
-    public static XmlDocument Normalize([NotNull] XmlDocument xmlDocument)
+    public XmlDocument Normalize([NotNull] XmlDocument xmlDocument)
     {
       Assert.ArgumentNotNull(xmlDocument, "xmlDocument");
 
@@ -180,7 +197,7 @@
     }
 
     [NotNull]
-    public static XmlDocument Normalize([NotNull] string filePath)
+    public XmlDocument Normalize([NotNull] string filePath)
     {
       Assert.ArgumentNotNull(filePath, "filePath");
       Assert.IsTrue(!string.IsNullOrEmpty(filePath) && File.Exists(filePath), "File does not exist");
@@ -193,7 +210,7 @@
       using (var file = File.OpenWrite(tmp))
       {
         var txt = new StringBuilder();
-        foreach (var line in File.ReadAllLines(filePath))
+        foreach (var line in this.FileSystem.File.ReadAllLines(filePath))
         {
           if (line.Length > 2 && line[0] == '-' && line[1] == ' ')
           {
@@ -216,9 +233,9 @@
 
       // Fix for issue SCB-2 to merge different <settings> elements
       var xmlDocument = new XmlDocument();
-      xmlDocument.Load(tmp);
+      XmlUtil.LoadXml(this.FileSystem, xmlDocument, tmp);
 
-      return Normalize(xmlDocument);
+      return this.Normalize(xmlDocument);
     }
 
     [NotNull]
