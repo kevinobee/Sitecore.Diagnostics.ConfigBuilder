@@ -1,8 +1,8 @@
 *.suo
 *.user
-packages/
-Sitecore.Diagnostics.ConfigBuilder.UnitTests/bin/
-Sitecore.Diagnostics.ConfigBuilder.UnitTests/obj/
-Sitecore.Diagnostics.ConfigBuilder/bin/
-Sitecore.Diagnostics.ConfigBuilder/obj/
-TestResults/
+src/packages/
+src/Sitecore.Diagnostics.ConfigBuilder/bin/
+src/Sitecore.Diagnostics.ConfigBuilder/obj/
+src/Sitecore.Diagnostics.ConfigBuilder.UnitTests/bin/
+src/Sitecore.Diagnostics.ConfigBuilder.UnitTests/obj/
+src/TestResults/
