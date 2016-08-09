@@ -52,6 +52,8 @@
         return;
       }
 
+      filePath = filePath.StartsWith("/") ? filePath : $"/{filePath}";
+
       if (cycleDetector.ContainsKey(filePath))
       {
         throw new InvalidOperationException(
